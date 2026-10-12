@@ -74,6 +74,20 @@ Two example events are included as drafts to duplicate from.
   **Work with Local Repository** → pick this folder. Edits are written to disk
   and the dev server reloads.
 
+## Tests: nothing an editor saves can break the build
+
+```bash
+npm test     # about 30 seconds
+```
+
+`tests/content.test.mjs` copies the site to a temp folder, writes the kinds of content a
+careless, mischievous or random editor could save (blank and deleted fields, wrong types,
+broken markdown, HTML and script tags, colliding page names, everything deleted, hundreds
+of events), and builds each. `tests/events.test.mjs` checks event scheduling and repeats.
+The content schema is deliberately forgiving: bad values are ignored and a section it can't
+understand is skipped with a `[content] skipped ...` warning in the Cloudflare build log,
+instead of failing the deploy. Run the tests before merging any code change.
+
 ## Going live (Cloudflare Pages + GitHub)
 
 1. The source lives at [acklenx/supportatlantacare](https://github.com/acklenx/supportatlantacare) (`main`).
