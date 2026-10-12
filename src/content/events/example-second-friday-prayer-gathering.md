@@ -1,6 +1,6 @@
 ---
 title: 'Example: Second Friday Prayer Gathering'
-status: published
+status: draft
 dates:
   - date: 2026-11-06
     start_time: 7:30 AM
