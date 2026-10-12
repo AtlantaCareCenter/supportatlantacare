@@ -50,8 +50,9 @@ const section = z.preprocess(dropEmpty, z.discriminatedUnion('_template', [
     }))),
   }),
   z.object({
-    _template: z.literal('contact_form'),
+    _template: z.literal('contact_details'),
     intro: z.string().optional(),
+    note: z.string().optional(),
     button_label: z.string().optional(),
     button_url: z.string().optional(),
   }),

@@ -279,26 +279,18 @@ body.nav-open { overflow: hidden; }
 .help-columns img { margin: 0 auto 1rem; height: 64px; width: auto; }
 .help-columns h3 { margin-bottom: 1rem; }
 
-/* ---------- contact form ---------- */
+/* ---------- contact page ---------- */
 .contact-section { padding-top: 0; }
 .contact-section .container { display: grid; gap: 2rem 6%; grid-template-columns: 1fr; align-items: start; }
 @media (min-width: 760px) { .contact-section .container { grid-template-columns: 1fr 1fr; } }
-.contact-section .prose h3 { margin-top: 2rem; }
-.contact-form { background: var(--grey-2); padding: 32px; max-width: 500px; margin: 0 auto; }
-@media (min-width: 760px) { .contact-form { transform: translateY(-24px); } }
-.contact-form p { margin: 0 0 1rem; }
-.contact-form label { display: block; font-weight: 700; font-size: 1rem; margin-bottom: .2rem; }
-.contact-form .req { color: var(--red); }
-.contact-form input:not([type=hidden]), .contact-form select, .contact-form textarea {
-  display: block; width: 100%; border: 0; border-radius: 0; background: #fff; color: #000;
-  font: inherit; font-size: 1.05rem; padding: .5rem .6rem;
-}
-.contact-form select { min-height: 42px; }
-.contact-form textarea { min-height: 100px; resize: vertical; }
-.contact-form .hp { position: absolute; left: -9000px; width: 1px; height: 1px; overflow: hidden; }
-.contact-form .actions { text-align: center; padding-top: .5rem; }
-.contact-form .status { text-align: center; margin: 0; min-height: 1.5em; font-size: 1.05rem; }
-.contact-form-off a { color: var(--red); }
+.contact-panel { background: var(--grey-2); padding: 32px; max-width: 500px; margin: 0 auto; }
+@media (min-width: 760px) { .contact-panel { transform: translateY(-24px); } }
+.contact-panel .h3 { margin-bottom: 1rem; }
+.contact-panel h3 { font-size: 1rem; font-weight: 700; margin: 1.25rem 0 .2rem; }
+.contact-panel p { margin: 0; }
+.contact-panel .prose { margin-bottom: .5rem; }
+.contact-panel a { color: var(--red); text-decoration: none; }
+.contact-panel a:hover { text-decoration: underline; }
 
 /* ---------- home: video banner ---------- */
 .video-hero { position: relative; height: 720px; overflow: hidden; background: #000; }

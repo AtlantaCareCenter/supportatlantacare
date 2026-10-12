@@ -11,7 +11,7 @@ can edit it from a browser, no developer, (almost) no hosting bill.
   that reads and writes the content files.
 
 ```
-src/content/singles/site.yml   phone, addresses, donate link, menu, footer text, contact form settings
+src/content/singles/site.yml   phone, addresses, donate link, menu, footer text
 src/content/singles/home.yml   the home page (video banner, sections)
 src/content/pages/*.md         every other page (folders = URL paths)
 public/images/                 photos and icons
@@ -35,7 +35,7 @@ Every page is made of a small set of blocks the editor understands:
 | Text block | Rich text, optionally centered, with an optional red button under it |
 | Two columns | Two side-by-side columns; each is text *or* an image; optional grey background |
 | Icon columns | Individuals / Businesses / Churches icons with buttons |
-| Contact form | Intro text beside the contact form |
+| Contact details | Intro text beside a panel with the phone number and addresses from Site Settings |
 
 The donate link, phone number and addresses live in **Site Settings** and appear everywhere
 automatically (the phone number is auto-linked wherever it's typed).
@@ -63,13 +63,6 @@ automatically (the phone number is auto-linked wherever it's typed).
    atlantacare.com (`base_url` in `public/admin/config.yml`). In that Worker's settings add
    `supportatlantacare.com` to the `ALLOWED_DOMAINS` variable (comma-separated). Editors need
    a GitHub account with write access to this repo — the same shared account works for both sites.
-5. **Contact form:** the original used a WordPress plugin to email submissions. A static site
-   can't send email on its own, so the form posts to a free form service. Sign up at
-   [Web3Forms](https://web3forms.com) (free, no account: enter the inbox address, get an access
-   key) or [Formspree](https://formspree.io), then in **Site Settings → Contact form** set the
-   form service address (`https://api.web3forms.com/submit` or the Formspree form URL) and, for
-   Web3Forms, the access key. Until that's set the contact page shows the phone number instead
-   of a form.
 
 Ongoing cost: the domain registration. Everything else is on free tiers.
 
@@ -79,5 +72,8 @@ Ongoing cost: the domain registration. Everything else is on free tiers.
 screenshots and `extract.py`, which produced `src/content/`. The original home page plays a
 Vimeo video (muted, looping) behind the banner; the play button opens the same video with sound.
 The upcoming-events list (an empty WordPress events plugin) became a plain "Events" page.
+The contact form (a WordPress plugin that emailed submissions) was dropped: a static site can't
+send email without a third-party form service, and none of the free ones are private enough.
+The contact page shows the phone number and addresses instead.
 The "Website Development by M&R Marketing" footer credit was not carried over.
 Fonts: the original used Adobe Fonts Roboto Condensed; this uses the self-hosted equivalent.
