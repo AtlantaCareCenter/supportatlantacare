@@ -4,6 +4,7 @@ import Base from '../layouts/Base.astro';
 import Button from '../components/Button.astro';
 import Callout from '../components/Callout.astro';
 import Wave from '../components/Wave.astro';
+import EventList from '../components/EventList.astro';
 import { md, mdInline, loadSite } from '../lib/md';
 
 await loadSite();
@@ -74,7 +75,7 @@ const playSrc = `https://player.vimeo.com/video/${hero.video_id}?autoplay=1&dnt=
   <section class="home-events">
     <div class="container">
       <h2>{events.heading}</h2>
-      {events.text && <p class="h3">{events.text}</p>}
+      <EventList empty_text={events.text} limit={events.limit || 3} compact />
       {events.link_label && <p class="button-center"><Button href={events.link_url} label={events.link_label} /></p>}
     </div>
   </section>
