@@ -2,7 +2,10 @@
 // Two button styles from the original theme:
 //   variant="red"    — solid red rounded button (default; "Make A Donation", "How You Can Help")
 //   variant="stroke" — uppercase text with the hand-drawn red underline (home "ways to help" rows)
-const { href, label, external, variant = 'red' } = Astro.props;
+// A blank link means the online giving link from Site Settings.
+import { site } from '../lib/md';
+const { label, external, variant = 'red' } = Astro.props;
+const href = Astro.props.href || site.donate_url;
 const isExternal = external ?? /^https?:\/\//.test(href ?? '');
 ---
 {href && label && (variant === 'stroke' ? (

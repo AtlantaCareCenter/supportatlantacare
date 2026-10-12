@@ -6,7 +6,7 @@
 
 backend:
   name: github
-  repo: acklenx/supportatlantacare
+  repo: AtlantaCareCenter/supportatlantacare
   branch: main
   base_url: https://atlantacare-sveltia-cms-auth.cloudflare-com-cc6.workers.dev
 
@@ -16,6 +16,10 @@ logo_url: /images/logo.png
 
 media_folder: public/images
 public_folder: /images
+
+# Don't write unused optional fields as null/'' into the content files
+output:
+  omit_empty_optional_fields: true
 
 # ---------------------------------------------------------------------------
 # Reusable field definitions
