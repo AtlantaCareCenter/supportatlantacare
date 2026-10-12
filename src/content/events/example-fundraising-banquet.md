@@ -1,6 +1,6 @@
 ---
 title: 'Example: Spring Fundraising Banquet'
-status: published
+status: draft
 dates:
   - date: 2026-10-12
     start_time: 6:00 PM
