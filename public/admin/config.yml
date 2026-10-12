@@ -52,16 +52,6 @@ collections:
             fields:
               - { label: Name, name: label, widget: string }
               - { label: File, name: file, widget: file, media_folder: public/docs, public_folder: /docs }
-          - label: Contact form
-            name: contact_form
-            widget: object
-            fields:
-              - { label: Form service address, name: action, widget: string, required: false,
-                  hint: "Where the form sends messages, e.g. https://formspree.io/f/xxxx or https://api.web3forms.com/submit. Leave blank to hide the form." }
-              - { label: Access key, name: access_key, widget: string, required: false,
-                  hint: "Only for Web3Forms." }
-              - { label: Subject choices, name: subjects, widget: list, field: { label: Subject, name: subject, widget: string } }
-              - { label: Thank-you message, name: success_message, widget: string }
           - label: Menu
             name: nav
             widget: list
@@ -226,11 +216,12 @@ collections:
                       - { label: Icon, name: icon, widget: image, required: false }
                       - { label: Button text, name: link_label, widget: string, required: false, default: How You Can Help }
                       - { label: Button link, name: link_url, widget: string, required: false }
-              - label: Contact form
-                name: contact_form
-                summary: "Contact form"
+              - label: Contact details (phone & addresses from Site Settings)
+                name: contact_details
+                summary: "Contact details"
                 fields:
-                  - { label: Text beside the form, name: intro, widget: markdown, required: false }
+                  - { label: Intro text (left), name: intro, widget: markdown, required: false }
+                  - { label: Note above the phone number, name: note, widget: markdown, required: false, minimal: true }
                   - *btn_label
                   - *btn_url
             

@@ -2,8 +2,8 @@
 import Callout from './Callout.astro';
 import Button from './Button.astro';
 import Wave from './Wave.astro';
-import ContactForm from './ContactForm.astro';
-import { md } from '../lib/md';
+import { md, site } from '../lib/md';
+const nl2br = (s: string) => (s || '').replace(/\n/g, '<br>');
 const { sections = [] } = Astro.props;
 ---
 {sections.map((s: any) => {
@@ -66,7 +66,7 @@ const { sections = [] } = Astro.props;
         </section>
       );
 
-    case 'contact_form':
+    case 'contact_details':
       return (
         <section class="section contact-section">
           <div class="container">
@@ -74,7 +74,15 @@ const { sections = [] } = Astro.props;
               <div class="prose" set:html={md(s.intro)} />
               {s.button_label && <p><Button href={s.button_url} label={s.button_label} /></p>}
             </div>
-            <div><ContactForm /></div>
+            <div class="contact-panel">
+              <h2 class="h3">Get in Touch</h2>
+              {s.note && <div class="prose" set:html={md(s.note)} />}
+              <h3>Phone</h3>
+              <p><a href={`tel:${site.phone}`}>{site.phone}</a></p>
+              <h3>Our Clinic</h3>
+              <p><a href={site.map_url} target="_blank" rel="noopener" set:html={nl2br(site.address)} /></p>
+              {site.mailing_address && <Fragment><h3>Mailing Address</h3><p set:html={nl2br(site.mailing_address)} /></Fragment>}
+            </div>
           </div>
         </section>
       );

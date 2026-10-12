@@ -22,18 +22,6 @@ documents:
   file: /docs/privacy-policy.pdf
 - label: Terms & Conditions
   file: /docs/terms-of-service.pdf
-contact_form:
-  action: ''
-  subjects:
-  - About Atlanta Care
-  - Volunteer Opportunities
-  - Fundraising Opportunities
-  - Event Sponsorship
-  - Donations
-  - Invite a Speaker
-  - Contribute In-Kind Service
-  - Other
-  success_message: Thank you! Your message has been sent.
 nav:
 - label: About Us
   url: /about/
