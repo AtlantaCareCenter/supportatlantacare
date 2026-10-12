@@ -8,7 +8,7 @@ backend:
   name: github
   repo: AtlantaCareCenter/supportatlantacare
   branch: main
-  base_url: https://atlantacare-sveltia-cms-auth.cloudflare-com-cc6.workers.dev
+  base_url: https://sveltia-cms-auth2.atlantacarecenter.workers.dev
 
 site_url: https://supportatlantacare.com
 display_url: https://supportatlantacare.com
