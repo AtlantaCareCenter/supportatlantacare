@@ -1,0 +1,114 @@
+---
+import '@fontsource/roboto-condensed/400.css';
+import '@fontsource/roboto-condensed/700.css';
+import '@fontsource/roboto-condensed/400-italic.css';
+import '@fontsource/roboto-condensed/700-italic.css';
+import '@fontsource/herr-von-muellerhoff/400.css';
+import '../styles/global.css';
+import Wave from '../components/Wave.astro';
+import Button from '../components/Button.astro';
+import { md, site } from '../lib/md';
+
+const { title, description } = Astro.props;
+const isHome = Astro.url.pathname === '/';
+const pageTitle = title ? `${title} | ${site.name}` : `${site.name} | ${site.tagline}`;
+const year = new Date().getFullYear();
+const nl2br = (s: string) => (s || '').replace(/\n/g, '<br>');
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{pageTitle}</title>
+  {description && <meta name="description" content={description} />}
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+  <meta property="og:title" content={pageTitle} />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content={new URL('/images/logo.png', Astro.site)} />
+</head>
+<body class={isHome ? 'home' : undefined}>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <div class="support-banner">
+    <p class="banner-title"><a href="/">{site.banner_title}</a></p>
+    <Button href={site.donate_url} label={site.donate_label} />
+  </div>
+
+  <header class="site-header">
+    <a href="/" aria-label={`${site.name} home`}>
+      <img src={isHome ? '/images/logo-white.png' : '/images/logo.png'} alt={`${site.short_name} logo`} width="200" height="197" />
+    </a>
+  </header>
+
+  <button class="menu-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">
+    <span class="bars"></span><span class="label">Menu</span>
+  </button>
+
+  <nav id="site-nav" class="site-nav" data-open="false" aria-label="Main">
+    <div class="nav-inner">
+      <ul class="menu">
+        {site.nav.map((item: any) => (
+          <li>
+            {item.url ? <a href={item.url} target={/^https?:/.test(item.url) ? '_blank' : undefined}>{item.label}</a> : <span>{item.label}</span>}
+            {item.children && <ul>{item.children.map((c: any) => <li><a href={c.url}>{c.label}</a></li>)}</ul>}
+          </li>
+        ))}
+      </ul>
+      <div class="nav-aside">
+        <h2 class="h3">Contact</h2>
+        <p>Phone: <a href={`tel:${site.phone}`}>{site.phone}</a></p>
+        <h2 class="h3">Our Clinic</h2>
+        <p><a href={site.map_url} target="_blank" rel="noopener" set:html={nl2br(site.address)} /></p>
+        {site.mailing_address && <p set:html={nl2br(site.mailing_address)} />}
+        <Button href={site.donate_url} label={site.donate_label} />
+      </div>
+    </div>
+  </nav>
+
+  <main id="main">
+    <slot />
+  </main>
+
+  <footer class="site-footer">
+    <Wave />
+    <div class="footer-main">
+      <div class="container">
+        <div class="logo"><a href="/"><img src="/images/logo.png" alt={`${site.short_name} logo`} loading="lazy" /></a></div>
+        <div>
+          <p class="blurb">{site.footer_blurb}</p>
+          <Button href={site.donate_url} label={site.footer_button_label} />
+          <div class="disclaimer">
+            <strong>Services Disclaimer:</strong>{' '}
+            <Fragment set:html={md(site.disclaimer)} />
+          </div>
+          <div class="footer-contact">
+            <h2 class="h3">contact</h2>
+            <p><a href={`tel:${site.phone}`}>{site.phone}</a></p>
+            <p><a href={site.map_url} target="_blank" rel="noopener" set:html={nl2br(site.address)} /></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-copy">
+      Copyright © {year} {site.name}
+      {(site.documents ?? []).map((d: any) => <Fragment> | <a href={d.file} target="_blank" rel="noopener">{d.label}</a></Fragment>)}
+    </div>
+  </footer>
+
+  <script>
+    const btn = document.querySelector('.menu-toggle') as HTMLButtonElement;
+    const nav = document.getElementById('site-nav')!;
+    const set = (open: boolean) => {
+      btn.setAttribute('aria-expanded', String(open));
+      btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+      nav.dataset.open = String(open);
+      document.body.classList.toggle('nav-open', open);
+    };
+    btn.addEventListener('click', () => set(nav.dataset.open !== 'true'));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') set(false); });
+    nav.addEventListener('click', (e) => { if ((e.target as HTMLElement).closest('a')) set(false); });
+  </script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+name: Support Atlanta Care Center
+short_name: Atlanta Care Center
+tagline: Pregnancy Center in Georgia
+banner_title: Support Atlanta Care Center
+donate_url: https://www.myegiving.com/App/Giving/eGiving-96649
+donate_label: Donate Now
+video_url: https://vimeo.com/636323414
+phone: 404-870-0788
+address: |-
+  1801 Peachtree St.
+  Suite 225
+  Atlanta, GA 30309
+mailing_address: |-
+  Post Office Box 550103
+  Atlanta, GA 30355
+map_url: https://goo.gl/maps/YeYBEiqXr6Lkpn6n7
+footer_blurb: Since 1982, women have relied on our expertise to guide them through the uncertainty of unintended pregnancies. Through our free of charge services, we empower women to make fully informed choices about their pregnancy.
+footer_button_label: Make A Donation
+disclaimer: Atlanta Care Center does not offer annual exams, birth control, abortion services or referrals, prenatal and postnatal care, infertility treatments, or treatment for reproductive tract infections. Atlanta Care Center will offer referrals to local physicians for prenatal care. Medical services are provided in accordance with all applicable laws, and in accordance with pertinent medical standards, under the supervision and direction of a licensed physician. Patient information is held in strict and absolute confidence in accordance with our [Notice of Privacy Policy](/docs/privacy-policy.pdf). Releases and permissions are obtained appropriately. Patient information is only disclosed as required by law and when necessary to protect the patient or others against imminent harm.
+documents:
+- label: Privacy Policy
+  file: /docs/privacy-policy.pdf
+- label: Terms & Conditions
+  file: /docs/terms-of-service.pdf
+contact_form:
+  action: ''
+  subjects:
+  - About Atlanta Care
+  - Volunteer Opportunities
+  - Fundraising Opportunities
+  - Event Sponsorship
+  - Donations
+  - Invite a Speaker
+  - Contribute In-Kind Service
+  - Other
+  success_message: Thank you! Your message has been sent.
+nav:
+- label: About Us
+  url: /about/
+- label: How We Serve
+  url: /how-we-serve/
+- label: How To Help
+  url: /how-to-help/
+  children:
+  - label: Individuals
+    url: /how-to-help/individuals/
+  - label: Businesses
+    url: /how-to-help/businesses/
+  - label: Churches
+    url: /how-to-help/churches/
+- label: Hear From Our Patients
+  url: /how-we-serve/#patient-testimonials
+- label: Events
+  url: /events/
+- label: Contact Us
+  url: /contact/
+- label: Donate
+  url: https://www.myegiving.com/App/Giving/eGiving-96649
+- label: Video
+  url: https://vimeo.com/636323414

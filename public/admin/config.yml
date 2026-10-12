@@ -1,0 +1,256 @@
+# Sveltia CMS configuration — the editing UI at /admin/
+#
+# Production: `repo` is the GitHub repository and `base_url` the tiny auth worker
+# (see README "Going live"). Locally, open http://localhost:8172/admin/ in
+# Chrome/Edge and choose "Work with Local Repository" — no login needed.
+
+backend:
+  name: github
+  repo: acklenx/supportatlantacare
+  branch: main
+  base_url: https://atlantacare-sveltia-cms-auth.cloudflare-com-cc6.workers.dev
+
+site_url: https://supportatlantacare.com
+display_url: https://supportatlantacare.com
+logo_url: /images/logo.png
+
+media_folder: public/images
+public_folder: /images
+
+# ---------------------------------------------------------------------------
+# Reusable field definitions
+# ---------------------------------------------------------------------------
+_templates:
+  button_label: &btn_label
+    { label: Button text, name: button_label, widget: string, required: false,
+      hint: "Leave blank for no button." }
+  button_url: &btn_url
+    { label: Button link, name: button_url, widget: string, required: false,
+      hint: "e.g. /how-to-help/ or the online giving link." }
+
+_section_types: &section_types
+  - label: Call to action
+    name: callout
+    summary: "{{fields.heading}}"
+    fields:
+      - { label: Heading, name: heading, widget: text,
+          hint: "One phrase per line. [Link text](https://...) makes a red underlined link; **bold** for bold." }
+      - { label: Text under heading, name: text, widget: markdown, required: false, minimal: true }
+      - *btn_label
+      - *btn_url
+  - label: Text block
+    name: text
+    summary: "{{fields.body | truncate(60)}}"
+    fields:
+      - { label: Text, name: body, widget: markdown, required: false }
+      - { label: Center the text, name: center, widget: boolean, required: false, default: false }
+      - { label: Background photo, name: background_image, widget: image, required: false,
+          hint: "Optional. Adds a wide photo behind the text." }
+      - { label: Show lists in 3 columns, name: columns, widget: select, required: false,
+          options: [{ label: "No", value: 1 }, { label: "Yes", value: 3 }] }
+      - *btn_label
+      - *btn_url
+      - { label: Anchor (for links like /page/#name), name: anchor, widget: string, required: false }
+  - label: Two columns
+    name: two_column
+    summary: "Two columns"
+    fields:
+      - { label: Left text, name: left, widget: markdown, required: false }
+      - { label: Left image (instead of text), name: left_image, widget: image, required: false }
+      - { label: Left image description, name: left_image_alt, widget: string, required: false }
+      - { label: Right text, name: right, widget: markdown, required: false }
+      - { label: Right image (instead of text), name: right_image, widget: image, required: false }
+      - { label: Right image description, name: right_image_alt, widget: string, required: false }
+      - { label: Grey background, name: style, widget: select, required: false,
+          options: [{ label: "No", value: "" }, { label: "Yes", value: grey }] }
+      - *btn_label
+      - *btn_url
+  - label: Icon columns (Individuals / Businesses / Churches)
+    name: help_columns
+    summary: "{{fields.items.length}} columns"
+    fields:
+      - label: Columns
+        name: items
+        widget: list
+        summary: "{{fields.title}}"
+        fields:
+          - { label: Title, name: title, widget: string }
+          - { label: Icon, name: icon, widget: image, required: false }
+          - { label: Button text, name: link_label, widget: string, required: false, default: How You Can Help }
+          - { label: Button link, name: link_url, widget: string, required: false }
+  - label: Contact form
+    name: contact_form
+    summary: "Contact form"
+    fields:
+      - { label: Text beside the form, name: intro, widget: markdown, required: false }
+      - *btn_label
+      - *btn_url
+
+_page_fields: &page_fields
+  - { label: Page title (banner), name: title, widget: string }
+  - { label: Headline, name: heading, widget: string, required: false }
+  - { label: Intro paragraph(s), name: body, widget: markdown, required: false }
+  - { label: Search engine description, name: description, widget: string, required: false,
+      hint: "One sentence shown in Google results." }
+  - { label: Menu order, name: order, widget: number, required: false, value_type: int }
+  - label: Page sections
+    name: sections
+    widget: list
+    typeKey: _template
+    types: *section_types
+
+# ---------------------------------------------------------------------------
+collections:
+  - name: settings
+    label: Site Settings
+    icon: settings
+    files:
+      - name: site
+        label: Contact info, donate link & menu
+        file: src/content/singles/site.yml
+        icon: contact_phone
+        fields:
+          - { label: Online giving link, name: donate_url, widget: string,
+              hint: "Used by every Donate button." }
+          - { label: Top bar title, name: banner_title, widget: string }
+          - { label: Top bar button text, name: donate_label, widget: string }
+          - { label: Video link (menu), name: video_url, widget: string, required: false }
+          - { label: Phone, name: phone, widget: string }
+          - { label: Clinic address, name: address, widget: text, hint: "One line per row." }
+          - { label: Mailing address, name: mailing_address, widget: text, required: false, hint: "One line per row." }
+          - { label: Map link, name: map_url, widget: string }
+          - { label: Footer paragraph, name: footer_blurb, widget: text }
+          - { label: Footer button text, name: footer_button_label, widget: string, default: Make A Donation }
+          - { label: Services disclaimer (footer), name: disclaimer, widget: markdown, minimal: true }
+          - label: Documents (PDFs, linked in the footer)
+            name: documents
+            widget: list
+            summary: "{{fields.label}}"
+            fields:
+              - { label: Name, name: label, widget: string }
+              - { label: File, name: file, widget: file, media_folder: public/docs, public_folder: /docs }
+          - label: Contact form
+            name: contact_form
+            widget: object
+            fields:
+              - { label: Form service address, name: action, widget: string, required: false,
+                  hint: "Where the form sends messages, e.g. https://formspree.io/f/xxxx or https://api.web3forms.com/submit. Leave blank to hide the form." }
+              - { label: Access key, name: access_key, widget: string, required: false,
+                  hint: "Only for Web3Forms." }
+              - { label: Subject choices, name: subjects, widget: list, field: { label: Subject, name: subject, widget: string } }
+              - { label: Thank-you message, name: success_message, widget: string }
+          - label: Menu
+            name: nav
+            widget: list
+            summary: "{{fields.label}}"
+            fields:
+              - { label: Label, name: label, widget: string }
+              - { label: Link, name: url, widget: string, required: false, hint: "e.g. /about/ — leave blank for a heading with sub-items only" }
+              - label: Sub-items
+                name: children
+                widget: list
+                required: false
+                summary: "{{fields.label}}"
+                fields:
+                  - { label: Label, name: label, widget: string }
+                  - { label: Link, name: url, widget: string }
+          - { label: Site name, name: name, widget: string }
+          - { label: Organization name, name: short_name, widget: string }
+          - { label: Tagline (browser tab), name: tagline, widget: string }
+      - name: home
+        label: Home page
+        file: src/content/singles/home.yml
+        icon: home
+        fields:
+          - label: Video banner
+            name: hero
+            widget: object
+            fields:
+              - { label: Vimeo video number, name: video_id, widget: string,
+                  hint: "The number at the end of the Vimeo link, e.g. 1047885583." }
+              - { label: Play button label (screen readers), name: play_label, widget: string }
+          - label: First section
+            name: intro
+            widget: object
+            fields:
+              - { label: Heading, name: heading, widget: text }
+              - { label: Text, name: text, widget: markdown, minimal: true }
+              - { label: Photo, name: image, widget: image }
+              - *btn_label
+              - *btn_url
+          - label: Ways to help section
+            name: support
+            widget: object
+            fields:
+              - { label: Photo, name: image, widget: image }
+              - { label: Heading, name: heading, widget: text }
+              - { label: Text, name: text, widget: markdown, minimal: true }
+              - label: Links
+                name: links
+                widget: list
+                summary: "{{fields.title}}"
+                fields:
+                  - { label: Title, name: title, widget: string }
+                  - { label: Icon, name: icon, widget: image }
+                  - { label: Link text, name: link_label, widget: string, default: How You Can Help }
+                  - { label: Link, name: link_url, widget: string }
+          - label: Services section
+            name: services
+            widget: object
+            fields:
+              - { label: Heading, name: heading, widget: string }
+              - { label: Text, name: text, widget: markdown, minimal: true, required: false }
+              - { label: Background photo, name: background_image, widget: image }
+              - label: Service circles
+                name: items
+                widget: list
+                summary: "{{fields.title}}"
+                fields:
+                  - { label: Title, name: title, widget: string }
+                  - { label: Icon (faint, behind the title), name: icon, widget: image }
+              - *btn_label
+              - *btn_url
+          - label: About section
+            name: callout
+            widget: object
+            fields:
+              - { label: Heading, name: heading, widget: text }
+              - { label: Text, name: text, widget: markdown, minimal: true, required: false }
+              - *btn_label
+              - *btn_url
+          - label: Events section
+            name: events
+            widget: object
+            fields:
+              - { label: Heading, name: heading, widget: string }
+              - { label: Text, name: text, widget: string, required: false }
+              - { label: Link text, name: link_label, widget: string, required: false }
+              - { label: Link, name: link_url, widget: string, required: false }
+          - { label: Search engine description, name: description, widget: string, required: false }
+
+  - name: pages
+    label: Pages
+    label_singular: Page
+    icon: description
+    folder: src/content/pages
+    extension: md
+    format: frontmatter
+    create: true
+    slug: "{{slug}}"
+    preview_path: "{{slug}}/"
+    summary: "{{title}}"
+    sortable_fields: [order, title]
+    fields: *page_fields
+
+  - name: how-to-help
+    label: How To Help pages
+    label_singular: How To Help page
+    icon: volunteer_activism
+    folder: src/content/pages/how-to-help
+    extension: md
+    format: frontmatter
+    create: true
+    slug: "{{slug}}"
+    preview_path: "how-to-help/{{slug}}/"
+    summary: "{{heading}}"
+    fields: *page_fields

@@ -1,0 +1,55 @@
+description: Your partnership with our center offers hope to women facing an unintended pregnancy.
+hero:
+  video_id: '1047885583'
+  play_label: Watch Atlanta Care Center's video message to donors
+intro:
+  heading: |-
+    Hope-Filled Support
+    for Atlanta Women
+  text: Your partnership with Atlanta Care Center offers hope to women facing unintended pregnancies.
+  button_label: Make A Donation
+  button_url: https://www.myegiving.com/App/Giving/eGiving-96649
+  image: /images/home-header-image.jpg
+support:
+  image: /images/home-ready-support.jpg
+  heading: Ready To Support Our Mission? Donating Is Simple & Secure
+  text: |-
+    Your support empowers us to continue providing at-risk women with compassionate, positive, and professional pregnancy services.
+
+    No matter your position, you play a role in making sure this refuge is available to women in Atlanta.
+  links:
+  - title: Individuals
+    icon: /images/home-icon-woman.png
+    link_label: How You Can Help
+    link_url: /how-to-help/individuals/
+  - title: Businesses
+    icon: /images/home-icon-building.png
+    link_label: How You Can Help
+    link_url: /how-to-help/businesses/
+  - title: Churches
+    icon: /images/home-icon-church.png
+    link_label: How You Can Help
+    link_url: /how-to-help/churches/
+services:
+  heading: How We Serve Atlanta
+  text: 'We care for Atlanta women who are experiencing unintended pregnancies by offering free of charge:'
+  background_image: /images/home-serves-section-background-image.jpg
+  items:
+  - title: Pregnancy Testing
+    icon: /images/icon-test.png
+  - title: Limited Ultrasound
+    icon: /images/icon-ultrasound-b.png
+  - title: Support Care Plan
+    icon: /images/icon-support.png
+  button_label: How Your Donations Help
+  button_url: /how-we-serve/
+callout:
+  heading: About Us
+  text: We offer compassionate care and support to pregnant women, empowering them to make positive choices. Since our founding in 1982, we have served tens of thousands of women experiencing unintended pregnancies with practical and positive alternatives.
+  button_label: Discover Our Mission
+  button_url: /about/
+events:
+  heading: Upcoming Events
+  text: Coming Soon!
+  link_label: ''
+  link_url: /events/

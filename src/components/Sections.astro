@@ -1,0 +1,82 @@
+---
+import Callout from './Callout.astro';
+import Button from './Button.astro';
+import Wave from './Wave.astro';
+import ContactForm from './ContactForm.astro';
+import { md } from '../lib/md';
+const { sections = [] } = Astro.props;
+---
+{sections.map((s: any) => {
+  switch (s._template) {
+    case 'callout':
+      return <Callout {...s} />;
+
+    case 'text':
+      if (s.background_image) return (
+        <section class="text-bg" id={s.anchor || undefined}>
+          <div class="bg" style={`background-image:url('${s.background_image}')`} aria-hidden="true" />
+          <Wave class="top" /><Wave class="bottom" />
+          <div class="container">
+            <div class={`prose ${s.center ? 'center' : ''}`} set:html={md(s.body)} />
+            {s.button_label && <p class="button-center"><Button href={s.button_url} label={s.button_label} /></p>}
+          </div>
+        </section>
+      );
+      return (
+        <section class="section" id={s.anchor || undefined}>
+          <div class="container">
+            <div class={`prose ${s.columns === 3 ? 'cols-3' : ''} ${s.center ? 'center' : ''}`} set:html={md(s.body)} />
+            {s.button_label && <p class="button-center"><Button href={s.button_url} label={s.button_label} /></p>}
+          </div>
+        </section>
+      );
+
+    case 'two_column': {
+      const button = s.button_label && <p class="col-button"><Button href={s.button_url} label={s.button_label} /></p>;
+      // the button goes under whichever column is text (the right one if both are)
+      const buttonSide = s.right_image && !s.left_image ? 'left' : 'right';
+      return (
+        <section class={`section two-col ${s.style === 'grey' ? 'grey' : ''}`}>
+          <div class="container">
+            <div>
+              {s.left_image ? <img src={s.left_image} alt={s.left_image_alt ?? ''} loading="lazy" /> : <div class="prose" set:html={md(s.left)} />}
+              {buttonSide === 'left' && button}
+            </div>
+            <div>
+              {s.right_image ? <img src={s.right_image} alt={s.right_image_alt ?? ''} loading="lazy" /> : <div class="prose" set:html={md(s.right)} />}
+              {buttonSide === 'right' && button}
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    case 'help_columns':
+      return (
+        <section class="section help-columns">
+          <div class="container">
+            {s.items.map((it: any) => (
+              <div class="col">
+                {it.icon && <img src={it.icon} alt="" loading="lazy" />}
+                <h3>{it.title}</h3>
+                {it.link_label && <Button href={it.link_url} label={it.link_label} />}
+              </div>
+            ))}
+          </div>
+        </section>
+      );
+
+    case 'contact_form':
+      return (
+        <section class="section contact-section">
+          <div class="container">
+            <div>
+              <div class="prose" set:html={md(s.intro)} />
+              {s.button_label && <p><Button href={s.button_url} label={s.button_label} /></p>}
+            </div>
+            <div><ContactForm /></div>
+          </div>
+        </section>
+      );
+  }
+})}

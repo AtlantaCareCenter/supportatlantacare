@@ -1,0 +1,15 @@
+---
+import Base from '../layouts/Base.astro';
+import Callout from '../components/Callout.astro';
+import { loadSite } from '../lib/md';
+
+await loadSite();
+---
+<Base title="Page not found">
+  <Callout
+    heading="Page not found"
+    text="Sorry, that page doesn't exist. Head back to the home page, or call us and we'll help."
+    button_label="Home"
+    button_url="/"
+  />
+</Base>
