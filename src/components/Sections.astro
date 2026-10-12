@@ -15,7 +15,7 @@ const { sections = [] } = Astro.props;
     case 'text':
       if (s.background_image) return (
         <section class="text-bg" id={s.anchor || undefined}>
-          <div class="bg" style={`background-image:url('${s.background_image}')`} aria-hidden="true" />
+          <div class="bg" style={`background-image:url('${encodeURI(s.background_image).replace(/'/g, '%27')}')`} aria-hidden="true" />
           <Wave class="top" /><Wave class="bottom" />
           <div class="container">
             <div class={`prose ${s.center ? 'center' : ''}`} set:html={md(s.body)} />
@@ -87,10 +87,8 @@ const { sections = [] } = Astro.props;
             <div class="contact-panel">
               <h2 class="h3">Get in Touch</h2>
               {s.note && <div class="prose" set:html={md(s.note)} />}
-              <h3>Phone</h3>
-              <p><a href={`tel:${site.phone}`}>{site.phone}</a></p>
-              <h3>Our Clinic</h3>
-              <p><a href={site.map_url} target="_blank" rel="noopener" set:html={nl2br(site.address)} /></p>
+              {site.phone && <Fragment><h3>Phone</h3><p><a href={`tel:${site.phone}`}>{site.phone}</a></p></Fragment>}
+              {site.address && <Fragment><h3>Our Clinic</h3><p><a href={site.map_url || undefined} target="_blank" rel="noopener" set:html={nl2br(site.address)} /></p></Fragment>}
               {site.mailing_address && <Fragment><h3>Mailing Address</h3><p set:html={nl2br(site.mailing_address)} /></Fragment>}
             </div>
           </div>
