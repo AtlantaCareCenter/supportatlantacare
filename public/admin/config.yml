@@ -147,7 +147,8 @@ collections:
             widget: object
             fields:
               - { label: Heading, name: heading, widget: string }
-              - { label: Text, name: text, widget: string, required: false }
+              - { label: Text when there are no upcoming events, name: text, widget: string, required: false }
+              - { label: How many events to show, name: limit, widget: number, required: false, value_type: int, default: 3 }
               - { label: Link text, name: link_label, widget: string, required: false }
               - { label: Link, name: link_url, widget: string, required: false }
           - { label: Search engine description, name: description, widget: string, required: false }
@@ -225,6 +226,15 @@ collections:
                       - { label: Icon, name: icon, widget: image, required: false }
                       - { label: Button text, name: link_label, widget: string, required: false, default: How You Can Help }
                       - { label: Button link, name: link_url, widget: string, required: false }
+              - label: Events list
+                name: events_list
+                summary: "Upcoming events{{fields.show_past | ternary(' + past events', '')}}"
+                fields:
+                  - { label: Heading, name: heading, widget: string, required: false }
+                  - { label: Text when there are no upcoming events, name: empty_text, widget: string, required: false, default: "Coming Soon!" }
+                  - { label: Show past events, name: show_past, widget: boolean, required: false, default: false,
+                      hint: "Lists published events whose dates have passed. Archived events never show." }
+                  - { label: Past events heading, name: past_heading, widget: string, required: false, default: Past Events }
               - label: Contact details (phone & addresses from Site Settings)
                 name: contact_details
                 summary: "Contact details"
@@ -234,6 +244,62 @@ collections:
                   - *btn_label
                   - *btn_url
             
+
+  - name: events
+    label: Events
+    label_singular: Event
+    icon: event
+    folder: src/content/events
+    extension: md
+    format: frontmatter
+    create: true
+    slug: "{{slug}}"
+    preview_path: "events/{{slug}}/"
+    summary: "{{title}} ({{status}})"
+    sortable_fields: [title, status]
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Status, name: status, widget: select, default: published,
+          options: [{ label: "Draft (hidden; preview at /events/<name>/)", value: draft },
+                    { label: "Published", value: published },
+                    { label: "Archived (hidden, kept for later)", value: archived }] }
+      - label: Dates
+        name: dates
+        widget: list
+        min: 1
+        summary: "{{fields.date}} {{fields.start_time}}"
+        hint: "One row per day the event happens. For a repeating event, enter the first date only; it sets the pattern."
+        fields:
+          - { label: Date, name: date, widget: datetime, format: YYYY-MM-DD, time_format: false }
+          - { label: Start time, name: start_time, widget: string, required: false, hint: "e.g. 6:00 PM" }
+          - { label: End time, name: end_time, widget: string, required: false }
+      - label: Repeats
+        name: repeat
+        widget: object
+        collapsed: true
+        summary: "{{fields.rule}}"
+        fields:
+          - { label: Repeats, name: rule, widget: select, default: none,
+              options: [{ label: "Does not repeat", value: none },
+                        { label: "Weekly, same weekday", value: weekly },
+                        { label: "Monthly, same weekday (e.g. first Friday)", value: monthly_weekday },
+                        { label: "Monthly, same date (e.g. the 15th)", value: monthly_date },
+                        { label: "Yearly", value: yearly }] }
+          - { label: Every (1 = every week/month/year, 2 = every other)", name: every, widget: number, required: false, value_type: int, default: 1, min: 1 }
+          - { label: Until (leave blank to repeat indefinitely), name: until, widget: datetime, format: YYYY-MM-DD, time_format: false, required: false }
+          - { label: How to describe it, name: summary, widget: string, required: false,
+              hint: "e.g. First Friday of every month. Leave blank and the site writes it from the dates." }
+      - { label: Location, name: location, widget: string, required: false }
+      - { label: One-line summary (search engines, previews), name: summary, widget: string, required: false }
+      - { label: Details, name: body, widget: markdown, required: false }
+      - { label: Photo, name: image, widget: image, required: false }
+      - { label: Photo description, name: image_alt, widget: string, required: false }
+      - { label: Button text, name: link_label, widget: string, required: false, hint: "e.g. Reserve a Seat, RSVP" }
+      - { label: Button link, name: link_url, widget: string, required: false }
+      - { label: Go live on, name: publish_on, widget: datetime, format: YYYY-MM-DD, time_format: false, required: false,
+          hint: "Leave blank to show it as soon as it's published." }
+      - { label: Remove after, name: remove_after, widget: datetime, format: YYYY-MM-DD, time_format: false, required: false,
+          hint: "Leave blank to take it down the day after its last date. Set a date to keep it up longer, or take it down early." }
 
   - name: how-to-help
     label: How To Help pages

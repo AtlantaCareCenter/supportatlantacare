@@ -1,0 +1,36 @@
+---
+// One event in a listing. Carries data-* attributes so a small script can
+// re-check "is this still upcoming?" on the visitor's actual date, since the
+// site only rebuilds when someone saves in the editor.
+import Button from './Button.astro';
+import { md } from '../lib/md';
+import { occurrences, nextDate, lastDate, formatDate, timeFor, repeatSummary, isRepeating, openEnded, today } from '../lib/events';
+
+const { event, body, compact = false, mode = 'upcoming' } = Astro.props;
+const ev = event.data;
+const now = today();
+const all = occurrences(ev, now);
+const next = nextDate(ev, now);
+const showDates = isRepeating(ev) ? all.filter((d) => d >= now).slice(0, 3) : all;
+const repeatText = repeatSummary(ev);
+const url = `/events/${event.id}/`;
+---
+<article class={`event-card ${compact ? 'compact' : ''}`} data-event data-mode={mode}
+  data-dates={all.join(',')} data-from={ev.publish_on ?? ''} data-until={ev.remove_after ?? ''}
+  data-open={openEnded(ev) ? '1' : ''} data-last={lastDate(ev) ?? ''}>
+  {!compact && ev.image && <a class="media" href={url}><img src={ev.image} alt={ev.image_alt ?? ''} loading="lazy" /></a>}
+  <div class="body">
+    <h3><a href={url}>{ev.title}</a></h3>
+    {repeatText && <p class="repeat">{repeatText}</p>}
+    <ul class="dates">
+      {showDates.map((d) => (
+        <li data-date={d}><span class="date">{formatDate(d)}</span>{timeFor(ev, d) && <span class="time">{timeFor(ev, d)}</span>}</li>
+      ))}
+    </ul>
+    {isRepeating(ev) && next && <p class="next">Next: <span class="next-date" data-dates={all.join(',')}>{formatDate(next)}</span></p>}
+    {ev.location && <p class="location">{ev.location}</p>}
+    {!compact && body && <div class="prose" set:html={md(body)} />}
+    {!compact && ev.link_label && ev.link_url && <p><Button href={ev.link_url} label={ev.link_label} /></p>}
+    {compact && <p><a class="more" href={url}>Details</a></p>}
+  </div>
+</article>

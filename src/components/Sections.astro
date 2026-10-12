@@ -2,6 +2,7 @@
 import Callout from './Callout.astro';
 import Button from './Button.astro';
 import Wave from './Wave.astro';
+import EventList from './EventList.astro';
 import { md, site } from '../lib/md';
 const nl2br = (s: string) => (s || '').replace(/\n/g, '<br>');
 const { sections = [] } = Astro.props;
@@ -62,6 +63,15 @@ const { sections = [] } = Astro.props;
                 {it.link_label && <Button href={it.link_url} label={it.link_label} />}
               </div>
             ))}
+          </div>
+        </section>
+      );
+
+    case 'events_list':
+      return (
+        <section class="section events-section">
+          <div class="container">
+            <EventList heading={s.heading} empty_text={s.empty_text} show_past={s.show_past} past_heading={s.past_heading} />
           </div>
         </section>
       );

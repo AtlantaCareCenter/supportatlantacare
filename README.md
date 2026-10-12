@@ -36,9 +36,33 @@ Every page is made of a small set of blocks the editor understands:
 | Two columns | Two side-by-side columns; each is text *or* an image; optional grey background |
 | Icon columns | Individuals / Businesses / Churches icons with buttons |
 | Contact details | Intro text beside a panel with the phone number and addresses from Site Settings |
+| Events list | Upcoming events from the Events collection, optionally past events too |
 
 The donate link, phone number and addresses live in **Site Settings** and appear everywhere
 automatically (the phone number is auto-linked wherever it's typed).
+
+### Events
+
+Events are their own thing in the editor (**Events** in the left column), one entry per event.
+The Events page and the home page's "Upcoming Events" block list them automatically; when
+there are none, each shows its own "Coming Soon" wording instead.
+
+- **New event:** Events → New Event, fill in the form, Save. Fastest is to open an old one and
+  choose **Duplicate** from the menu, then change the title and dates.
+- **Dates:** one row per day. An event on three days is one event with three dates.
+- **Repeats:** enter the first date, then under Repeats pick weekly, monthly on the same
+  weekday ("first Friday"), monthly on the same date, or yearly. The site works out the next
+  dates and writes "The first Friday of every month" unless you type your own wording.
+  Set "Until" to stop at some point; leave it blank to run indefinitely.
+- **Status:** *Published* shows it; *Draft* hides it but builds a preview page at
+  `/events/<name>/` with a yellow banner, so it can be checked on the real site before
+  publishing; *Archived* hides it and keeps it in the editor for later.
+- **Go live on / Remove after:** blank means live as soon as it's published and taken down
+  the day after its last date. Set them to schedule it or keep it up longer.
+- **Past events:** off by default. Turn on "Show past events" on the Events page's list
+  section to add a Past Events list; archived and draft events never appear there.
+
+Two example events are included as drafts to duplicate from.
 
 ### The editor — Sveltia CMS (`/admin/`)
 
@@ -71,7 +95,7 @@ Ongoing cost: the domain registration. Everything else is on free tiers.
 `../supportatlantacare-scrape/` holds the original site's rendered HTML, images, theme CSS,
 screenshots and `extract.py`, which produced `src/content/`. The original home page plays a
 Vimeo video (muted, looping) behind the banner; the play button opens the same video with sound.
-The upcoming-events list (an empty WordPress events plugin) became a plain "Events" page.
+The WordPress events plugin became the Events collection described above.
 The contact form (a WordPress plugin that emailed submissions) was dropped: a static site can't
 send email without a third-party form service, and none of the free ones are private enough.
 The contact page shows the phone number and addresses instead.
