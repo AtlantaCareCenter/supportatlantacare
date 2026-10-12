@@ -15,7 +15,7 @@ const gone = show_past ? past(all.map((e) => e.data)).map((d) => all.find((e) =>
   <div class="upcoming">
     {shown.map((e) => <EventCard event={e} body={e.body} compact={compact} mode="upcoming" />)}
   </div>
-  <p class="empty h3" data-empty hidden={shown.length > 0}>{empty_text}</p>
+  <p class={`empty ${compact ? 'h3' : ''}`} data-empty hidden={shown.length > 0}>{empty_text}</p>
   {show_past && (
     <div class="past" data-past hidden={gone.length === 0}>
       <h2>{past_heading}</h2>

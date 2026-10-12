@@ -76,23 +76,26 @@ const pages = defineCollection({
   }),
 });
 
+// The editor writes dates unquoted (2026-10-12), which YAML reads as a Date; keep them as YYYY-MM-DD text.
+const dateStr = z.preprocess((v) => (v instanceof Date ? v.toISOString().slice(0, 10) : v), z.string());
+
 // One markdown file per event; the body is the description.
 const events = defineCollection({
   loader: glob({ pattern: '*.md', base: './src/content/events' }),
   schema: z.preprocess(dropEmpty, z.object({
     title: z.string(),
     status: z.enum(['draft', 'published', 'archived']).default('published'),
-    publish_on: z.string().optional(),
-    remove_after: z.string().optional(),
+    publish_on: dateStr.optional(),
+    remove_after: dateStr.optional(),
     dates: z.array(z.preprocess(dropEmpty, z.object({
-      date: z.string(),
+      date: dateStr,
       start_time: z.string().optional(),
       end_time: z.string().optional(),
     }))).default([]),
     repeat: z.preprocess(dropEmpty, z.object({
       rule: z.string().optional(),
       every: z.number().optional(),
-      until: z.string().optional(),
+      until: dateStr.optional(),
       summary: z.string().optional(),
     })).optional(),
     location: z.string().optional(),
