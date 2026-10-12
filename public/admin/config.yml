@@ -70,6 +70,15 @@ collections:
           - { label: Site name, name: name, widget: string }
           - { label: Organization name, name: short_name, widget: string }
           - { label: Tagline (browser tab), name: tagline, widget: string }
+          - { label: Google Tag Manager container ID, name: gtm_id, widget: string, required: false,
+              hint: "Looks like GTM-XXXXXXX. Leave blank to turn analytics off." }
+          - label: Google site verification codes
+            name: google_site_verification
+            widget: list
+            required: false
+            summary: "{{fields.token}}"
+            hint: "From Google Search Console. Leave as is unless Google asks for a new one."
+            field: { label: Code, name: token, widget: string }
       - name: home
         label: Home page
         file: src/content/singles/home.yml
