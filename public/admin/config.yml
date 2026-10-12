@@ -12,7 +12,8 @@ backend:
 
 site_url: https://supportatlantacare.com
 display_url: https://supportatlantacare.com
-logo_url: /images/logo.png
+logo:
+  src: /images/logo.png
 
 media_folder: public/images
 public_folder: /images
@@ -20,88 +21,6 @@ public_folder: /images
 # Don't write unused optional fields as null/'' into the content files
 output:
   omit_empty_optional_fields: true
-
-# ---------------------------------------------------------------------------
-# Reusable field definitions
-# ---------------------------------------------------------------------------
-_templates:
-  button_label: &btn_label
-    { label: Button text, name: button_label, widget: string, required: false,
-      hint: "Leave blank for no button." }
-  button_url: &btn_url
-    { label: Button link, name: button_url, widget: string, required: false,
-      hint: "e.g. /how-to-help/ or the online giving link." }
-
-_section_types: &section_types
-  - label: Call to action
-    name: callout
-    summary: "{{fields.heading}}"
-    fields:
-      - { label: Heading, name: heading, widget: text,
-          hint: "One phrase per line. [Link text](https://...) makes a red underlined link; **bold** for bold." }
-      - { label: Text under heading, name: text, widget: markdown, required: false, minimal: true }
-      - *btn_label
-      - *btn_url
-  - label: Text block
-    name: text
-    summary: "{{fields.body | truncate(60)}}"
-    fields:
-      - { label: Text, name: body, widget: markdown, required: false }
-      - { label: Center the text, name: center, widget: boolean, required: false, default: false }
-      - { label: Background photo, name: background_image, widget: image, required: false,
-          hint: "Optional. Adds a wide photo behind the text." }
-      - { label: Show lists in 3 columns, name: columns, widget: select, required: false,
-          options: [{ label: "No", value: 1 }, { label: "Yes", value: 3 }] }
-      - *btn_label
-      - *btn_url
-      - { label: Anchor (for links like /page/#name), name: anchor, widget: string, required: false }
-  - label: Two columns
-    name: two_column
-    summary: "Two columns"
-    fields:
-      - { label: Left text, name: left, widget: markdown, required: false }
-      - { label: Left image (instead of text), name: left_image, widget: image, required: false }
-      - { label: Left image description, name: left_image_alt, widget: string, required: false }
-      - { label: Right text, name: right, widget: markdown, required: false }
-      - { label: Right image (instead of text), name: right_image, widget: image, required: false }
-      - { label: Right image description, name: right_image_alt, widget: string, required: false }
-      - { label: Grey background, name: style, widget: select, required: false,
-          options: [{ label: "No", value: "" }, { label: "Yes", value: grey }] }
-      - *btn_label
-      - *btn_url
-  - label: Icon columns (Individuals / Businesses / Churches)
-    name: help_columns
-    summary: "{{fields.items.length}} columns"
-    fields:
-      - label: Columns
-        name: items
-        widget: list
-        summary: "{{fields.title}}"
-        fields:
-          - { label: Title, name: title, widget: string }
-          - { label: Icon, name: icon, widget: image, required: false }
-          - { label: Button text, name: link_label, widget: string, required: false, default: How You Can Help }
-          - { label: Button link, name: link_url, widget: string, required: false }
-  - label: Contact form
-    name: contact_form
-    summary: "Contact form"
-    fields:
-      - { label: Text beside the form, name: intro, widget: markdown, required: false }
-      - *btn_label
-      - *btn_url
-
-_page_fields: &page_fields
-  - { label: Page title (banner), name: title, widget: string }
-  - { label: Headline, name: heading, widget: string, required: false }
-  - { label: Intro paragraph(s), name: body, widget: markdown, required: false }
-  - { label: Search engine description, name: description, widget: string, required: false,
-      hint: "One sentence shown in Google results." }
-  - { label: Menu order, name: order, widget: number, required: false, value_type: int }
-  - label: Page sections
-    name: sections
-    widget: list
-    typeKey: _template
-    types: *section_types
 
 # ---------------------------------------------------------------------------
 collections:
@@ -180,8 +99,10 @@ collections:
               - { label: Heading, name: heading, widget: text }
               - { label: Text, name: text, widget: markdown, minimal: true }
               - { label: Photo, name: image, widget: image }
-              - *btn_label
-              - *btn_url
+              - &btn_label { label: Button text, name: button_label, widget: string, required: false,
+                hint: "Leave blank for no button." }
+              - &btn_url { label: Button link, name: button_url, widget: string, required: false,
+                hint: "e.g. /how-to-help/ or the online giving link." }
           - label: Ways to help section
             name: support
             widget: object
@@ -244,7 +165,75 @@ collections:
     preview_path: "{{slug}}/"
     summary: "{{title}}"
     sortable_fields: [order, title]
-    fields: *page_fields
+    fields: &page_fields
+      - { label: Page title (banner), name: title, widget: string }
+      - { label: Headline, name: heading, widget: string, required: false }
+      - { label: Intro paragraph(s), name: body, widget: markdown, required: false }
+      - { label: Search engine description, name: description, widget: string, required: false,
+          hint: "One sentence shown in Google results." }
+      - { label: Menu order, name: order, widget: number, required: false, value_type: int }
+      - label: Page sections
+        name: sections
+        widget: list
+        typeKey: _template
+        types: &section_types
+              - label: Call to action
+                name: callout
+                summary: "{{fields.heading}}"
+                fields:
+                  - { label: Heading, name: heading, widget: text,
+                      hint: "One phrase per line. [Link text](https://...) makes a red underlined link; **bold** for bold." }
+                  - { label: Text under heading, name: text, widget: markdown, required: false, minimal: true }
+                  - *btn_label
+                  - *btn_url
+              - label: Text block
+                name: text
+                summary: "{{fields.body | truncate(60)}}"
+                fields:
+                  - { label: Text, name: body, widget: markdown, required: false }
+                  - { label: Center the text, name: center, widget: boolean, required: false, default: false }
+                  - { label: Background photo, name: background_image, widget: image, required: false,
+                      hint: "Optional. Adds a wide photo behind the text." }
+                  - { label: Show lists in 3 columns, name: columns, widget: select, required: false,
+                      options: [{ label: "No", value: 1 }, { label: "Yes", value: 3 }] }
+                  - *btn_label
+                  - *btn_url
+                  - { label: Anchor (for links like /page/#name), name: anchor, widget: string, required: false }
+              - label: Two columns
+                name: two_column
+                summary: "Two columns"
+                fields:
+                  - { label: Left text, name: left, widget: markdown, required: false }
+                  - { label: Left image (instead of text), name: left_image, widget: image, required: false }
+                  - { label: Left image description, name: left_image_alt, widget: string, required: false }
+                  - { label: Right text, name: right, widget: markdown, required: false }
+                  - { label: Right image (instead of text), name: right_image, widget: image, required: false }
+                  - { label: Right image description, name: right_image_alt, widget: string, required: false }
+                  - { label: Grey background, name: style, widget: select, required: false,
+                      options: [{ label: "No", value: "" }, { label: "Yes", value: grey }] }
+                  - *btn_label
+                  - *btn_url
+              - label: Icon columns (Individuals / Businesses / Churches)
+                name: help_columns
+                summary: "{{fields.items.length}} columns"
+                fields:
+                  - label: Columns
+                    name: items
+                    widget: list
+                    summary: "{{fields.title}}"
+                    fields:
+                      - { label: Title, name: title, widget: string }
+                      - { label: Icon, name: icon, widget: image, required: false }
+                      - { label: Button text, name: link_label, widget: string, required: false, default: How You Can Help }
+                      - { label: Button link, name: link_url, widget: string, required: false }
+              - label: Contact form
+                name: contact_form
+                summary: "Contact form"
+                fields:
+                  - { label: Text beside the form, name: intro, widget: markdown, required: false }
+                  - *btn_label
+                  - *btn_url
+            
 
   - name: how-to-help
     label: How To Help pages
