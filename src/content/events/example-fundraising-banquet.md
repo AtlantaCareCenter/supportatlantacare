@@ -1,12 +1,13 @@
 ---
 title: 'Example: Spring Fundraising Banquet'
-status: draft
+status: published
 dates:
-- date: '2027-04-15'
-  start_time: 6:00 PM
-  end_time: 8:30 PM
+  - date: 2026-10-12
+    start_time: 6:00 PM
+    end_time: 8:30 PM
 repeat:
   rule: none
+  every: 1
 location: Peachtree Road United Methodist Church, 3180 Peachtree Rd NE, Atlanta
 summary: An evening of dinner and stories from the women Atlanta Care Center has served.
 link_label: Reserve a Seat
