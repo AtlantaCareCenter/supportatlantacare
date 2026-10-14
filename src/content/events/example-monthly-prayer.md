@@ -1,5 +1,5 @@
 ---
-title: 'Example: First Friday Prayer Gathering'
+title: 'Example: First Friday Prayer Gathering*&A^(*&gherkljwbtlervkeg b6'
 status: published
 dates:
   - date: 2026-11-06
