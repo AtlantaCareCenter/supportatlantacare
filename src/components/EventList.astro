@@ -1,0 +1,58 @@
+---
+// A list of events: upcoming (and optionally past), with the empty-state text.
+import { getCollection } from 'astro:content';
+import EventCard from './EventCard.astro';
+import { upcoming, past } from '../lib/events';
+
+const { heading, empty_text = 'Coming Soon!', show_past = false, past_heading = 'Past Events', limit, compact = false } = Astro.props;
+const all = await getCollection('events');
+const up = upcoming(all.map((e) => e.data)).map((d) => all.find((e) => e.data === d)!);
+const shown = limit ? up.slice(0, limit) : up;
+const gone = show_past ? past(all.map((e) => e.data)).map((d) => all.find((e) => e.data === d)!) : [];
+---
+<div class={`event-list ${compact ? 'compact' : ''}`} data-event-list>
+  {heading && <h2>{heading}</h2>}
+  <div class="upcoming">
+    {shown.map((e) => <EventCard event={e} body={e.body} compact={compact} mode="upcoming" />)}
+  </div>
+  <p class={`empty ${compact ? 'h3' : ''}`} data-empty hidden={shown.length > 0}>{empty_text}</p>
+  {show_past && (
+    <div class="past" data-past hidden={gone.length === 0}>
+      <h2>{past_heading}</h2>
+      {gone.map((e) => <EventCard event={e} body={e.body} compact={compact} mode="past" />)}
+    </div>
+  )}
+</div>
+
+<script>
+  // Re-check every card against the visitor's date, so events expire (and go-live
+  // dates take effect) even when nobody has saved anything in the editor since.
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const d = new Date();
+  const today = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  const fmt = new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+  const parse = (s: string) => { const [y, m, dd] = s.split('-').map(Number); return new Date(y, m - 1, dd); };
+
+  document.querySelectorAll<HTMLElement>('[data-event-list]').forEach((list) => {
+    let upCount = 0, pastCount = 0;
+    list.querySelectorAll<HTMLElement>('[data-event]').forEach((card) => {
+      const dates = (card.dataset.dates || '').split(',').filter(Boolean);
+      const from = card.dataset.from, until = card.dataset.until, open = card.dataset.open === '1';
+      const last = card.dataset.last || '';
+      const next = dates.find((x) => x >= today);
+      const live = (!from || from <= today) && (!until || today <= until);
+      const isUpcoming = live && (!!next || !!until);
+      const isPast = !open && !!last && last < today && !(until && today <= until);
+      const show = card.dataset.mode === 'past' ? isPast : isUpcoming;
+      card.hidden = !show;
+      if (show) card.dataset.mode === 'past' ? pastCount++ : upCount++;
+      const nextEl = card.querySelector<HTMLElement>('.next-date');
+      if (nextEl && next) nextEl.textContent = fmt.format(parse(next));
+      card.querySelectorAll<HTMLElement>('.dates li').forEach((li) => { li.classList.toggle('gone', (li.dataset.date || '') < today); });
+    });
+    const empty = list.querySelector<HTMLElement>('[data-empty]');
+    if (empty) empty.hidden = upCount > 0;
+    const pastEl = list.querySelector<HTMLElement>('[data-past]');
+    if (pastEl) pastEl.hidden = pastCount === 0;
+  });
+</script>

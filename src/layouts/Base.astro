@@ -9,7 +9,7 @@ import Wave from '../components/Wave.astro';
 import Button from '../components/Button.astro';
 import { md, site } from '../lib/md';
 
-const { title, description } = Astro.props;
+const { title, description, noindex = false } = Astro.props;
 const isHome = Astro.url.pathname === '/';
 const pageTitle = title ? `${title} | ${site.name}` : `${site.name} | ${site.tagline}`;
 const year = new Date().getFullYear();
@@ -23,13 +23,25 @@ const nl2br = (s: string) => (s || '').replace(/\n/g, '<br>');
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{pageTitle}</title>
   {description && <meta name="description" content={description} />}
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  {noindex && <meta name="robots" content="noindex" />}
+  <link rel="icon" href="/favicon.ico" sizes="16x16" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/android-icon-192x192.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png" />
   <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
   <meta property="og:title" content={pageTitle} />
   <meta property="og:type" content="website" />
   <meta property="og:image" content={new URL('/images/logo.png', Astro.site)} />
+  {site.google_site_verification.map((token) => <meta name="google-site-verification" content={token} />)}
+  {site.gtm_id && <script is:inline define:vars={{ id: site.gtm_id }}>
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});
+    var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;
+    j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer',id);
+  </script>}
 </head>
 <body class={isHome ? 'home' : undefined}>
+  {site.gtm_id && <noscript><iframe src={`https://www.googletagmanager.com/ns.html?id=${site.gtm_id}`} height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>}
   <a class="skip-link" href="#main">Skip to content</a>
 
   <div class="support-banner">
@@ -53,13 +65,13 @@ const nl2br = (s: string) => (s || '').replace(/\n/g, '<br>');
         {site.nav.map((item: any) => (
           <li>
             {item.url ? <a href={item.url} target={/^https?:/.test(item.url) ? '_blank' : undefined}>{item.label}</a> : <span>{item.label}</span>}
-            {item.children && <ul>{item.children.map((c: any) => <li><a href={c.url}>{c.label}</a></li>)}</ul>}
+            {item.children.length > 0 && <ul>{item.children.map((c: any) => <li><a href={c.url || undefined}>{c.label}</a></li>)}</ul>}
           </li>
         ))}
       </ul>
       <div class="nav-aside">
         <h2 class="h3">Contact</h2>
-        <p>Phone: <a href={`tel:${site.phone}`}>{site.phone}</a></p>
+        {site.phone && <p>Phone: <a href={`tel:${site.phone}`}>{site.phone}</a></p>}
         <h2 class="h3">Our Clinic</h2>
         <p><a href={site.map_url} target="_blank" rel="noopener" set:html={nl2br(site.address)} /></p>
         {site.mailing_address && <p set:html={nl2br(site.mailing_address)} />}
@@ -86,7 +98,7 @@ const nl2br = (s: string) => (s || '').replace(/\n/g, '<br>');
           </div>
           <div class="footer-contact">
             <h2 class="h3">contact</h2>
-            <p><a href={`tel:${site.phone}`}>{site.phone}</a></p>
+            {site.phone && <p><a href={`tel:${site.phone}`}>{site.phone}</a></p>}
             <p><a href={site.map_url} target="_blank" rel="noopener" set:html={nl2br(site.address)} /></p>
           </div>
         </div>
@@ -94,7 +106,7 @@ const nl2br = (s: string) => (s || '').replace(/\n/g, '<br>');
     </div>
     <div class="footer-copy">
       Copyright © {year} {site.name}
-      {(site.documents ?? []).map((d: any) => <Fragment> | <a href={d.file} target="_blank" rel="noopener">{d.label}</a></Fragment>)}
+      {site.documents.map((d: any) => <Fragment> | <a href={d.file} target="_blank" rel="noopener">{d.label}</a></Fragment>)}
     </div>
   </footer>
 

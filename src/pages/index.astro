@@ -1,50 +1,52 @@
 ---
-import { getEntry } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import Button from '../components/Button.astro';
 import Callout from '../components/Callout.astro';
 import Wave from '../components/Wave.astro';
+import EventList from '../components/EventList.astro';
 import { md, mdInline, loadSite } from '../lib/md';
+import { normalizeHome, single } from '../lib/safe';
 
 await loadSite();
-const home = (await getEntry('singles', 'home'))!.data;
+const home = normalizeHome(await single('home'));
 const { hero, intro, support, services, callout, events } = home;
+const cssUrl = (u: string) => `url('${encodeURI(u).replace(/'/g, '%27')}')`;
 const bgSrc = `https://player.vimeo.com/video/${hero.video_id}?background=1&autoplay=1&muted=1&loop=1&autopause=0&controls=0&dnt=1`;
 const playSrc = `https://player.vimeo.com/video/${hero.video_id}?autoplay=1&dnt=1`;
 ---
 <Base description={home.description}>
   <section class="video-hero">
-    <div class="video" aria-hidden="true">
+    {hero.video_id && <div class="video" aria-hidden="true">
       <iframe src={bgSrc} title="" tabindex="-1" allow="autoplay" loading="lazy"></iframe>
-    </div>
-    <button class="play" type="button" data-src={playSrc}><span class="sr-only">{hero.play_label}</span></button>
+    </div>}
+    {hero.video_id && <button class="play" type="button" data-src={playSrc}><span class="sr-only">{hero.play_label}</span></button>}
   </section>
   <dialog class="video-dialog">
     <form method="dialog"><button class="close" aria-label="Close video">×</button></form>
     <div class="frame"></div>
   </dialog>
 
-  <section class="home-intro">
+  {(intro.heading || intro.text || intro.image) && <section class="home-intro">
     <div class="container">
       <div class="text">
         <h2 set:html={mdInline(intro.heading)} />
         <div class="prose" set:html={md(intro.text)} />
         <p class="button-center"><Button href={intro.button_url} label={intro.button_label} /></p>
       </div>
-      <div><img src={intro.image} alt="" width="700" height="574" /></div>
+      {intro.image && <div><img src={intro.image} alt="" width="700" height="574" /></div>}
     </div>
-  </section>
+  </section>}
 
-  <section class="home-support">
+  {(support.heading || support.text || support.links.length > 0) && <section class="home-support">
     <div class="container">
-      <div><img src={support.image} alt="" width="700" height="663" loading="lazy" /></div>
+      {support.image && <div><img src={support.image} alt="" width="700" height="663" loading="lazy" /></div>}
       <div>
         <h2 set:html={mdInline(support.heading)} />
         <div class="prose" set:html={md(support.text)} />
         <ul class="help-links">
           {support.links.map((it: any) => (
             <li>
-              <span class="icon"><img src={it.icon} alt="" loading="lazy" /></span>
+              {it.icon && <span class="icon"><img src={it.icon} alt="" loading="lazy" /></span>}
               <h3>{it.title}</h3>
               <Button href={it.link_url} label={it.link_label} variant="stroke" />
             </li>
@@ -52,29 +54,29 @@ const playSrc = `https://player.vimeo.com/video/${hero.video_id}?autoplay=1&dnt=
         </ul>
       </div>
     </div>
-  </section>
+  </section>}
 
-  <section class="home-services">
-    <div class="bg" style={`background-image:url('${services.background_image}')`} aria-hidden="true"></div>
+  {(services.heading || services.items.length > 0) && <section class="home-services">
+    {services.background_image && <div class="bg" style={`background-image:${cssUrl(services.background_image)}`} aria-hidden="true"></div>}
     <Wave class="top" /><Wave class="bottom" />
     <div class="container">
       <h2 set:html={mdInline(services.heading)} />
       {services.text && <div class="prose center" set:html={md(services.text)} />}
       <ul class="service-icons">
         {services.items.map((it: any) => (
-          <li><span class="circle"><h3>{it.title}</h3><img src={it.icon} alt="" loading="lazy" /></span></li>
+          <li><span class="circle"><h3>{it.title}</h3>{it.icon && <img src={it.icon} alt="" loading="lazy" />}</span></li>
         ))}
       </ul>
       <p class="button-center"><Button href={services.button_url} label={services.button_label} /></p>
     </div>
-  </section>
+  </section>}
 
-  <Callout {...callout} />
+  {callout.heading && <Callout {...callout} />}
 
   <section class="home-events">
     <div class="container">
       <h2>{events.heading}</h2>
-      {events.text && <p class="h3">{events.text}</p>}
+      <EventList empty_text={events.text} limit={events.limit} compact />
       {events.link_label && <p class="button-center"><Button href={events.link_url} label={events.link_label} /></p>}
     </div>
   </section>

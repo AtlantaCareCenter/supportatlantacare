@@ -1,6 +1,10 @@
 name: Support Atlanta Care Center
 short_name: Atlanta Care Center
 tagline: Pregnancy Center in Georgia
+gtm_id: GTM-T2RKZ4L
+google_site_verification:
+- token: Qqb27x7M14zSydCiKzIa-8E29SgU8uBE8i_toHuGry8
+- token: bJbh01UFdym93ZMCQAA6NIuD0FtopuB9NZrvu2YsO8g
 banner_title: Support Atlanta Care Center
 donate_url: https://www.myegiving.com/App/Giving/eGiving-96649
 donate_label: Donate Now
@@ -22,18 +26,6 @@ documents:
   file: /docs/privacy-policy.pdf
 - label: Terms & Conditions
   file: /docs/terms-of-service.pdf
-contact_form:
-  action: ''
-  subjects:
-  - About Atlanta Care
-  - Volunteer Opportunities
-  - Fundraising Opportunities
-  - Event Sponsorship
-  - Donations
-  - Invite a Speaker
-  - Contribute In-Kind Service
-  - Other
-  success_message: Thank you! Your message has been sent.
 nav:
 - label: About Us
   url: /about/

@@ -4,11 +4,11 @@ order: 8
 description: We serve as a bridge between pregnant women and the help, care and support, they need to make positive choices. Support our mission and donate today!
 heading: ''
 sections:
-- _template: contact_form
+- _template: contact_details
   intro: |
     Because of your faithful financial support, our center can offer all [our services](/how-we-serve/) free of charge to every at-risk woman who walks through our doors.
-
-    ### PO Box 550103<br>Atlanta, GA 30355
+  note: |
+    Questions about donating, volunteering, hosting a fundraiser, or inviting a speaker? Give us a call and we’ll be glad to help.
   button_label: How You Can Help
   button_url: /how-to-help/
 - _template: callout

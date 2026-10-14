@@ -11,7 +11,7 @@ can edit it from a browser, no developer, (almost) no hosting bill.
   that reads and writes the content files.
 
 ```
-src/content/singles/site.yml   phone, addresses, donate link, menu, footer text, contact form settings
+src/content/singles/site.yml   phone, addresses, donate link, menu, footer text
 src/content/singles/home.yml   the home page (video banner, sections)
 src/content/pages/*.md         every other page (folders = URL paths)
 public/images/                 photos and icons
@@ -35,10 +35,34 @@ Every page is made of a small set of blocks the editor understands:
 | Text block | Rich text, optionally centered, with an optional red button under it |
 | Two columns | Two side-by-side columns; each is text *or* an image; optional grey background |
 | Icon columns | Individuals / Businesses / Churches icons with buttons |
-| Contact form | Intro text beside the contact form |
+| Contact details | Intro text beside a panel with the phone number and addresses from Site Settings |
+| Events list | Upcoming events from the Events collection, optionally past events too |
 
 The donate link, phone number and addresses live in **Site Settings** and appear everywhere
 automatically (the phone number is auto-linked wherever it's typed).
+
+### Events
+
+Events are their own thing in the editor (**Events** in the left column), one entry per event.
+The Events page and the home page's "Upcoming Events" block list them automatically; when
+there are none, each shows its own "Coming Soon" wording instead.
+
+- **New event:** Events → New Event, fill in the form, Save. Fastest is to open an old one and
+  choose **Duplicate** from the menu, then change the title and dates.
+- **Dates:** one row per day. An event on three days is one event with three dates.
+- **Repeats:** enter the first date, then under Repeats pick weekly, monthly on the same
+  weekday ("first Friday"), monthly on the same date, or yearly. The site works out the next
+  dates and writes "The first Friday of every month" unless you type your own wording.
+  Set "Until" to stop at some point; leave it blank to run indefinitely.
+- **Status:** *Published* shows it; *Draft* hides it but builds a preview page at
+  `/events/<name>/` with a yellow banner, so it can be checked on the real site before
+  publishing; *Archived* hides it and keeps it in the editor for later.
+- **Go live on / Remove after:** blank means live as soon as it's published and taken down
+  the day after its last date. Set them to schedule it or keep it up longer.
+- **Past events:** off by default. Turn on "Show past events" on the Events page's list
+  section to add a Past Events list; archived and draft events never appear there.
+
+Two example events are included as drafts to duplicate from.
 
 ### The editor — Sveltia CMS (`/admin/`)
 
@@ -49,6 +73,20 @@ automatically (the phone number is auto-linked wherever it's typed).
 - On a laptop, open `http://localhost:8172/admin/` in Chrome/Edge and choose
   **Work with Local Repository** → pick this folder. Edits are written to disk
   and the dev server reloads.
+
+## Tests: nothing an editor saves can break the build
+
+```bash
+npm test     # about 30 seconds
+```
+
+`tests/content.test.mjs` copies the site to a temp folder, writes the kinds of content a
+careless, mischievous or random editor could save (blank and deleted fields, wrong types,
+broken markdown, HTML and script tags, colliding page names, everything deleted, hundreds
+of events), and builds each. `tests/events.test.mjs` checks event scheduling and repeats.
+The content schema is deliberately forgiving: bad values are ignored and a section it can't
+understand is skipped with a `[content] skipped ...` warning in the Cloudflare build log,
+instead of failing the deploy. Run the tests before merging any code change.
 
 ## Going live (Cloudflare Pages + GitHub)
 
@@ -63,13 +101,6 @@ automatically (the phone number is auto-linked wherever it's typed).
    atlantacare.com (`base_url` in `public/admin/config.yml`). In that Worker's settings add
    `supportatlantacare.com` to the `ALLOWED_DOMAINS` variable (comma-separated). Editors need
    a GitHub account with write access to this repo — the same shared account works for both sites.
-5. **Contact form:** the original used a WordPress plugin to email submissions. A static site
-   can't send email on its own, so the form posts to a free form service. Sign up at
-   [Web3Forms](https://web3forms.com) (free, no account: enter the inbox address, get an access
-   key) or [Formspree](https://formspree.io), then in **Site Settings → Contact form** set the
-   form service address (`https://api.web3forms.com/submit` or the Formspree form URL) and, for
-   Web3Forms, the access key. Until that's set the contact page shows the phone number instead
-   of a form.
 
 Ongoing cost: the domain registration. Everything else is on free tiers.
 
@@ -78,6 +109,9 @@ Ongoing cost: the domain registration. Everything else is on free tiers.
 `../supportatlantacare-scrape/` holds the original site's rendered HTML, images, theme CSS,
 screenshots and `extract.py`, which produced `src/content/`. The original home page plays a
 Vimeo video (muted, looping) behind the banner; the play button opens the same video with sound.
-The upcoming-events list (an empty WordPress events plugin) became a plain "Events" page.
+The WordPress events plugin became the Events collection described above.
+The contact form (a WordPress plugin that emailed submissions) was dropped: a static site can't
+send email without a third-party form service, and none of the free ones are private enough.
+The contact page shows the phone number and addresses instead.
 The "Website Development by M&R Marketing" footer credit was not carried over.
 Fonts: the original used Adobe Fonts Roboto Condensed; this uses the self-hosted equivalent.
