@@ -1,6 +1,6 @@
 ---
 title: 'Example: First Friday Prayer Gathering'
-status: draft
+status: published
 dates:
   - date: 2026-11-06
     start_time: 7:30 AM
