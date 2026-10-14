@@ -12,7 +12,7 @@ location: Atlanta, GA
 summary: short test event 1
 image: /images/PXL_20261001_185733923.MP.jpg
 publish_on: 2026-10-14
-remove_after: 2026-10-14
+remove_after: 2026-10-15
 ---
 
 details about test event 1 here
