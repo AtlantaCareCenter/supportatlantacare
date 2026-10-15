@@ -17,14 +17,22 @@
       color: hsl(210 10% 35%); background: hsl(210 5% 95%); }
     .acc-required-note b { color: hsl(0 85% 35%); font-size: 1.1em; }
     ${FIELD} > header .required { color: hsl(0 85% 35%) !important; font-weight: 700; font-size: 1.1em; }
-    /* The box is drawn inside the field (inset shadow + padding) because the form pane
-       scrolls and would clip anything drawn outside the field's edges. */
-    ${FIELD}.acc-invalid { padding: 10px 12px; border-radius: 6px; box-shadow: inset 0 0 0 2px hsl(0 70% 50%); }
+    /* The box is a real border on a pseudo-element inset inside the field (which Sveltia
+       gives position:relative and 16px padding). Anything drawn outside the field's edges
+       would be clipped by the scrolling pane, and an inset shadow on the field itself lost
+       a pixel at the bottom whenever the field's height was fractional. */
+    ${FIELD}.acc-invalid::before { content: ''; position: absolute; inset: 3px 6px; border: 2px solid hsl(0 70% 50%);
+      border-radius: 8px; pointer-events: none; }
     ${FIELD}.acc-invalid > header h4 { color: hsl(0 85% 35%); }
-    ${FIELD}.acc-flash { animation: acc-flash 0.5s ease-in-out 3; }
+    ${FIELD}.acc-flash { animation: acc-flash-bg 0.5s ease-in-out 3; }
+    ${FIELD}.acc-flash::before { animation: acc-flash 0.5s ease-in-out 3; }
     @keyframes acc-flash {
-      0%, 100% { box-shadow: inset 0 0 0 2px hsl(0 70% 50%); background-color: transparent; }
-      50% { box-shadow: inset 0 0 0 5px hsl(0 100% 40%); background-color: hsl(0 90% 60% / .18); }
+      0%, 100% { border-width: 2px; border-color: hsl(0 70% 50%); }
+      50% { border-width: 4px; border-color: hsl(0 100% 40%); }
+    }
+    @keyframes acc-flash-bg {
+      0%, 100% { background-color: transparent; }
+      50% { background-color: hsl(0 90% 60% / .18); }
     }
     .acc-errors { position: fixed; top: 12px; left: 50%; transform: translateX(-50%); z-index: 100000;
       max-width: min(720px, calc(100vw - 32px)); padding: 12px 44px 12px 16px; border-radius: 8px;
