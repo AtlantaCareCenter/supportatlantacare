@@ -1,0 +1,149 @@
+---
+// Short links & QR codes: every short link with its QR code, the next free code, and a
+// QR code maker for any address. Creating links happens in the editor (signed in).
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Wave from '../../components/Wave.astro';
+import { loadSite } from '../../lib/md';
+import { shortLinks, nextFreeCode } from '../../lib/short-links';
+
+await loadSite();
+const pages = await getCollection('pages');
+const taken = ['admin', 'events', 'images', 'docs', ...pages.map((p) => p.id.split('/')[0])];
+const raw = (await getCollection('links')).map((e) => ({ id: e.id, ...e.data }));
+const links = shortLinks(raw, taken, () => {});
+const origin = Astro.site!.origin;
+const next = nextFreeCode(links.map((l) => l.code));
+---
+<Base title="Short links & QR codes" noindex>
+  <div class="page-title"><p class="h1">Short links &amp; QR codes</p><Wave /></div>
+  <section class="section links-admin">
+    <div class="container">
+      <p class="intro">A short link is <strong>{origin.replace(/^https?:\/\//, '')}/<em>xx</em></strong>: two letters or digits that send people anywhere, with a QR code small enough to print.
+        Links are created in the editor and work on the live site about a minute after saving.</p>
+      <p class="actions">
+        <a class="button red-button" href={`/admin/#/collections/links/new`}>New short link{next && <Fragment> (next free code: <code>{next}</code>)</Fragment>}</a>
+        <a class="button red-button" href="/admin/#/collections/links">Edit short links</a>
+      </p>
+
+      <h2 class="h3">QR code for any address</h2>
+      <form class="qr-any" data-qr-form>
+        <label>Address <input type="url" name="url" placeholder="https://supportatlantacare.com/events/" required /></label>
+        <button type="submit" class="button red-button">Make QR code</button>
+      </form>
+      <div class="link-card" data-any-card hidden>
+        <div class="qr" data-qr></div>
+        <div class="meta">
+          <p class="short"><a data-any-url href="#" target="_blank" rel="noopener"></a></p>
+          <p class="downloads"><a data-dl="svg" download>Download SVG</a> · <a data-dl="png" download>Download PNG</a></p>
+        </div>
+      </div>
+
+      <h2 class="h3">Short links ({links.length})</h2>
+      <p class="stats-note" data-stats-note hidden></p>
+      {links.length === 0 && <p>None yet. Create the first one in the editor.</p>}
+      <ul class="link-list">
+        {links.map((l) => (
+          <li class="link-card" data-code={l.code}>
+            <div class="qr" data-qr data-text={`${origin}/${l.code}`}></div>
+            <div class="meta">
+              <p class="short"><a href={`${origin}/${l.code}`} target="_blank" rel="noopener">{origin.replace(/^https?:\/\//, '')}/{l.code}</a>
+                <button type="button" class="copy" data-copy={`${origin}/${l.code}`}>Copy</button></p>
+              {l.label && <p class="label">{l.label}</p>}
+              <p class="target">→ <a href={l.url} target="_blank" rel="noopener">{l.url}</a></p>
+              <p class="stats" data-stats={l.code}>Clicks: …</p>
+              <p class="downloads"><a data-dl="svg" download={`${l.code}.svg`}>Download SVG</a> · <a data-dl="png" download={`${l.code}.png`}>Download PNG</a>
+                · <a href={`/admin/#/collections/links/entries/${l.code}`}>Edit</a></p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .links-admin .intro { max-width: 60ch; }
+  .links-admin .actions { display: flex; flex-wrap: wrap; gap: .75rem 1rem; margin: 1rem 0 2rem; }
+  .links-admin h2 { margin: 2rem 0 .75rem; }
+  .qr-any { display: flex; flex-wrap: wrap; gap: .75rem 1rem; align-items: end; margin-bottom: 1rem; }
+  .qr-any label { display: flex; flex-direction: column; gap: .25rem; flex: 1 1 320px; font-weight: 700; }
+  .qr-any input { font: inherit; padding: .5rem .75rem; border: 2px solid var(--grey); border-radius: 5px; }
+  .link-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); }
+  .link-card { display: grid; grid-template-columns: 150px 1fr; gap: 1rem; align-items: start; padding: 1rem; border: 2px solid var(--grey); border-radius: 8px; }
+  .link-card .qr { width: 150px; height: 150px; background: #fff; }
+  .link-card .qr :global(svg) { width: 100%; height: 100%; display: block; }
+  .link-card p { margin: 0 0 .4rem; overflow-wrap: anywhere; }
+  .link-card .short { font-size: 1.35rem; font-weight: 700; }
+  .link-card .short a { text-decoration: none; }
+  .link-card .label { font-weight: 700; }
+  .link-card .target a { color: inherit; }
+  .link-card .stats { font-size: .95rem; color: #444; }
+  .link-card .stats b { color: var(--red); }
+  .stats-note { padding: .5rem .75rem; border-left: 4px solid var(--red); background: #fff5f5; }
+  .link-card .downloads a { color: var(--red); text-decoration: underline; cursor: pointer; }
+  .link-card .copy { font: inherit; font-size: .8rem; margin-left: .5rem; padding: .1rem .5rem; border: 1px solid var(--grey); border-radius: 4px; background: #fff; cursor: pointer; }
+  @media (max-width: 500px) { .link-list { grid-template-columns: 1fr; } .link-card { grid-template-columns: 1fr; } }
+</style>
+
+<script>
+  import QRCode from 'qrcode';
+  const opts = { errorCorrectionLevel: 'M' as const, margin: 2 };
+
+  /** Draw the QR code for `text` into the card's box and wire up its download links. */
+  async function render(card: Element, text: string) {
+    const box = card.querySelector<HTMLElement>('[data-qr]')!;
+    box.innerHTML = await QRCode.toString(text, { ...opts, type: 'svg' });
+    const svg = card.querySelector<HTMLAnchorElement>('[data-dl="svg"]')!;
+    svg.href = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(box.innerHTML);
+    const png = card.querySelector<HTMLAnchorElement>('[data-dl="png"]')!;
+    png.href = await QRCode.toDataURL(text, { ...opts, width: 1024 });
+  }
+
+  document.querySelectorAll<HTMLElement>('.link-card[data-code]').forEach((card) => {
+    const text = card.querySelector<HTMLElement>('[data-qr]')!.dataset.text!;
+    render(card, text);
+  });
+
+  document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((b) => b.addEventListener('click', async () => {
+    await navigator.clipboard.writeText(b.dataset.copy!);
+    b.textContent = 'Copied'; setTimeout(() => (b.textContent = 'Copy'), 1500);
+  }));
+
+  // click counts from the Pages Function + D1 (functions/api/stats.js)
+  (async () => {
+    const note = document.querySelector<HTMLElement>('[data-stats-note]')!;
+    const cells = document.querySelectorAll<HTMLElement>('[data-stats]');
+    if (!cells.length) return;
+    try {
+      const res = await fetch('/api/stats', { cache: 'no-store' });
+      if (res.status === 503) throw new Error('Click counting is off: bind a D1 database named DB to this Pages project (README, "Short links").');
+      if (!res.ok) throw new Error(`Click counts unavailable right now (${res.status}).`);
+      const { links } = await res.json();
+      const ago = (t: number) => { const d = Math.floor((Date.now() - t) / 86400000); return d === 0 ? 'today' : d === 1 ? 'yesterday' : `${d} days ago`; };
+      cells.forEach((c) => {
+        const s = links[c.dataset.stats!];
+        c.innerHTML = s ? `<b>${s.clicks}</b> click${s.clicks === 1 ? '' : 's'} · <b>${s.unique}</b> unique · ${s.week} this week · ${s.month} this month · last ${ago(s.last)}` : 'No clicks yet';
+      });
+    } catch (e) {
+      cells.forEach((c) => (c.textContent = ''));
+      note.textContent = location.hostname === 'localhost' || location.hostname === '127.0.0.1' ? 'Short links and click counts only work on the live site (they run on Cloudflare).' : (e as Error).message;
+      note.hidden = false;
+    }
+  })();
+
+  const form = document.querySelector<HTMLFormElement>('[data-qr-form]')!;
+  const anyCard = document.querySelector<HTMLElement>('[data-any-card]')!;
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const url = (form.elements.namedItem('url') as HTMLInputElement).value.trim();
+    if (!url) return;
+    const a = anyCard.querySelector<HTMLAnchorElement>('[data-any-url]')!;
+    a.href = url; a.textContent = url;
+    const name = url.replace(/^https?:\/\//, '').replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '').slice(0, 40) || 'qr';
+    anyCard.querySelector<HTMLAnchorElement>('[data-dl="svg"]')!.download = `${name}.svg`;
+    anyCard.querySelector<HTMLAnchorElement>('[data-dl="png"]')!.download = `${name}.png`;
+    anyCard.hidden = false;
+    await render(anyCard, url);
+  });
+</script>

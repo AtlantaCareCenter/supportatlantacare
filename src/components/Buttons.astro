@@ -1,0 +1,15 @@
+---
+// All the buttons of a section or event: the main one (label/url) followed by any
+// "More buttons" the editor added (e.g. Register as a Guest / Register as a Sponsor).
+// Renders nothing when there is none. With requireUrl, a button without a link is left
+// out instead of falling back to the online giving link.
+import Button from './Button.astro';
+const { label, url, more, class: cls, variant, requireUrl = false } = Astro.props;
+const all = [{ label, url }, ...(Array.isArray(more) ? more : [])]
+  .filter((b) => b && typeof b === 'object' && b.label && (!requireUrl || b.url));
+---
+{all.length > 0 && (
+  <p class:list={['buttons', cls]}>
+    {all.map((b) => <Button href={b.url} label={b.label} variant={variant} />)}
+  </p>
+)}

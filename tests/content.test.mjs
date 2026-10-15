@@ -171,3 +171,106 @@ scenario('events list section placed on several pages and home limit nonsense', 
     mustBuild(t, sb, `(limit=${limit})`);
   }
 });
+
+// ---------------------------------------------------------------- private site: nothing is indexable
+scenario('every page, the robots.txt and the headers file tell search engines to stay away', (t, sb) => {
+  sb.event('open', `---\ntitle: Open house\nstatus: published\ndates:\n  - date: 2027-03-02\nlocation: 1801 Peachtree St. Suite 225, Atlanta, GA 30309\n---\n`);
+  mustBuild(t, sb);
+  for (const route of ['/', '/about/', '/events/', '/events/open/', '/admin/']) {
+    const html = sb.html(route);
+    const tags = html.match(/<meta name="robots"[^>]*>/g) ?? [];
+    assert.equal(tags.length, 1, `${route} has exactly one robots meta tag: ${tags.join(' ')}`);
+    assert.match(tags[0], /noindex/); assert.match(tags[0], /nofollow/);
+  }
+  assert.match(sb.read('dist/404.html'), /<meta name="robots" content="noindex, nofollow/);
+  const robots = sb.read('dist/robots.txt');
+  assert.match(robots, /^User-agent: \*$/m); assert.match(robots, /^Disallow: \/$/m);
+  assert.doesNotMatch(robots, /Sitemap:/, 'a private site advertises no sitemap');
+  assert.ok(!sb.exists('dist/sitemap-index.xml') && !sb.exists('dist/sitemap-0.xml'), 'no sitemap is generated');
+  assert.match(sb.read('dist/_headers'), /^\/\*\n\s+X-Robots-Tag: noindex, nofollow/m, 'X-Robots-Tag header for every file (PDFs, images)');
+  assert.match(sb.read('dist/humans.txt'), /\/\* TEAM \*\//);
+  // the event's location is a clickable Google Maps link
+  const page = sb.html('/events/open/');
+  assert.match(page, /<a href="https:\/\/www\.google\.com\/maps\/search\/\?api=1&(amp;)?query=1801%20Peachtree%20St\.%20Suite%20225%2C%20Atlanta%2C%20GA%2030309" target="_blank" rel="noopener">1801 Peachtree St\. Suite 225, Atlanta, GA 30309<\/a>/);
+  assert.match(sb.html('/events/'), /maps\/search\/\?api=1&(amp;)?query=1801%20Peachtree/, 'listing links it too');
+  assert.ok(sb.exists('dist/admin/editor-help.js'), 'editor add-on ships with the site');
+});
+
+// ---------------------------------------------------------------- "/admin" after any page url opens that page in the editor
+scenario('every page and event gets an /admin/ shortcut into the editor', (t, sb) => {
+  sb.event('open', `---\ntitle: Open house\nstatus: published\ndates:\n  - date: 2027-03-02\n---\n`);
+  sb.page('deep/nested/thing', `---\ntitle: Deep\n---\n`);   // no editor collection covers this folder... except "pages" does
+  mustBuild(t, sb);
+  const target = (route) => sb.html(route + 'admin/').match(/<meta http-equiv="refresh" content="0; url=([^"]+)"/)?.[1];
+  assert.equal(target('/about/'), '/admin/#/collections/pages/entries/about');
+  assert.equal(target('/how-to-help/'), '/admin/#/collections/pages/entries/how-to-help');
+  assert.equal(target('/how-to-help/individuals/'), '/admin/#/collections/how-to-help/entries/individuals', 'sub-folder collection wins over the parent');
+  assert.equal(target('/events/'), '/admin/#/collections/pages/entries/events', 'the Events page itself');
+  assert.equal(target('/events/open/'), '/admin/#/collections/events/entries/open');
+  assert.equal(target('/deep/nested/thing/'), '/admin/#/collections/pages/entries/deep/nested/thing');
+  const html = sb.html('/about/admin/');
+  assert.match(html, /const url = "\/admin\/#\/collections\/pages\/entries\/about";\s*location\.replace\(url\)/, 'script redirect too, for browsers that ignore meta refresh');
+  assert.match(html, /<meta name="robots" content="noindex, nofollow"/);
+  assert.match(sb.html('/admin/'), /sveltia-cms\.js/, 'the editor itself is still at /admin/');
+});
+
+// ---------------------------------------------------------------- "More buttons": second and third calls to action
+scenario('sections and events can carry several buttons, and junk in that list is ignored', (t, sb) => {
+  sb.page('multi', `---\ntitle: Multi\nsections:\n- _template: callout\n  heading: Join us\n  button_label: Register as a Guest\n  button_url: /guest/\n  buttons:\n  - label: Register as a Sponsor\n    url: /sponsor/\n  - label: Volunteer\n    url: https://example.org/volunteer\n- _template: text\n  body: Only extra buttons, no main one\n  buttons:\n  - label: Second\n    url: /two/\n- _template: two_column\n  left: words\n  right_image: /images/rose.svg\n  button_label: Main\n  buttons:\n  - label: Extra\n    url: /extra/\n- _template: contact_details\n  buttons: null\n- _template: callout\n  heading: Junk\n  button_label: Fine\n  buttons:\n  - {}\n  - label: ''\n    url: /nolabel/\n  - 42\n  - label: Kept\n---\n`);
+  sb.event('gala', `---\ntitle: Gala\nstatus: published\ndates:\n  - date: 2027-03-02\nlink_label: Register as a Guest\nlink_url: /guest/\nbuttons:\n  - label: Register as a Sponsor\n    url: /sponsor/\n  - label: No link so not shown\n  - label: ''\n    url: /x/\n---\n`);
+  sb.event('onlymore', `---\ntitle: Only more\nstatus: published\ndates:\n  - date: 2027-03-02\nbuttons:\n  - label: Sponsor\n    url: /sponsor/\n---\n`);
+  sb.event('junk', `---\ntitle: Junk buttons\nstatus: published\ndates:\n  - date: 2027-03-02\nbuttons: "not a list"\n---\n`);
+  mustBuild(t, sb);
+  const multi = sb.html('/multi/');
+  const main = (html) => html.slice(html.indexOf('<main'), html.indexOf('</main>'));   // not the Donate buttons in the header/footer
+  const links = (html) => [...main(html).matchAll(/<a href="([^"]*)" class="button red-button"[^>]*>([^<]*)<\/a>/g)].map((m) => `${m[2]} -> ${m[1]}`);
+  const got = links(multi);
+  assert.deepEqual(got.slice(0, 3), ['Register as a Guest -> /guest/', 'Register as a Sponsor -> /sponsor/', 'Volunteer -> https://example.org/volunteer'], 'callout: main button first, then the extra ones in order');
+  assert.ok(got.includes('Second -> /two/'), 'a text block with only extra buttons still shows them');
+  assert.ok(got.includes('Extra -> /extra/'), 'two columns');
+  assert.ok(got.includes('Kept -> https://www.myegiving.com/App/Giving/eGiving-96649'), 'a section button without a link goes to the online giving link, as before');
+  assert.ok(!multi.includes('/nolabel/'), 'a button without text is dropped');
+  assert.equal((main(multi).match(/class="buttons/g) ?? []).length, 4, 'one button row per section that has buttons');
+  const gala = sb.html('/events/gala/');
+  assert.deepEqual(links(gala), ['Register as a Guest -> /guest/', 'Register as a Sponsor -> /sponsor/'], 'event: a button without a link is left out rather than pointing at the giving link');
+  assert.deepEqual(links(sb.html('/events/onlymore/')), ['Sponsor -> /sponsor/']);
+  assert.deepEqual(links(sb.html('/events/junk/')), []);
+  assert.ok(sb.html('/events/').includes('Register as a Sponsor'), 'extra buttons show on the events listing too');
+});
+
+// ---------------------------------------------------------------- short links & QR codes
+scenario('short links become a redirect table + Function routes, and are listed with QR codes at /admin/links/', (t, sb) => {
+  sb.write('src/content/links/7k.md', `---\ncode: 7k\nurl: https://www.myegiving.com/App/Giving/eGiving-96649\nlabel: Giving QR for the banquet\n---\n`);
+  sb.write('src/content/links/ev.md', `---\ncode: ev\nurl: /events/\n---\n`);
+  sb.write('src/content/links/bad.md', `---\ncode: bad\nurl: https://example.org\n---\n`);
+  sb.write('src/content/links/x1.md', `---\ncode: x1\nurl: nowhere\n---\n`);
+  sb.write('src/content/links/dupe.md', `---\ncode: 7k\nurl: https://example.org/dupe\n---\n`);
+  sb.write('src/content/links/null.md', `---\ncode: null\nurl: null\nlabel: null\n---\n`);
+  sb.write('src/content/links/empty.md', ``);
+  sb.page('ab', `---\ntitle: A real page at /ab/\n---\n`);
+  sb.write('src/content/links/ab.md', `---\ncode: ab\nurl: https://example.org/hidden\n---\n`);
+  const out = mustBuild(t, sb);
+  assert.deepEqual(JSON.parse(sb.read('dist/short-links.json')), { '7k': 'https://www.myegiving.com/App/Giving/eGiving-96649', ev: '/events/' }, 'only valid, unique, non-colliding links');
+  const routes = JSON.parse(sb.read('dist/_routes.json'));
+  assert.deepEqual(routes.include, ['/api/*', '/7k*', '/ev*'], 'only short codes and the stats API invoke Functions');
+  assert.match(out, /short link "ab".*already a page/, 'collision with a real page is reported');
+  assert.match(out, /short link "dupe".*already used/);
+  const html = sb.html('/admin/links/');
+  assert.match(html, /supportatlantacare\.com\/7k/);
+  assert.match(html, /Giving QR for the banquet/);
+  assert.match(html, /data-text="https:\/\/supportatlantacare\.com\/ev"/, 'QR code text is the full short URL');
+  assert.doesNotMatch(html, /\/x1"|\/bad"|nowhere|example\.org\/hidden/, 'skipped links are not listed');
+  assert.match(html, /next free code: <code[^>]*>aa<\/code>/);
+  assert.match(html, /<meta name="robots" content="noindex/);
+  assert.ok(sb.exists('dist/ab/index.html'), 'the real page still exists');
+});
+
+scenario('with no short links at all the build still writes the tables and the page says so', (t, sb) => {
+  sb.clear('src/content/links');
+  mustBuild(t, sb);
+  assert.equal(sb.read('dist/short-links.json'), '{}');
+  assert.deepEqual(JSON.parse(sb.read('dist/_routes.json')).include, ['/api/*']);
+  assert.match(sb.html('/admin/links/'), /None yet/);
+  sb.remove('src/content/links');
+  mustBuild(t, sb, '(links folder deleted)');
+});

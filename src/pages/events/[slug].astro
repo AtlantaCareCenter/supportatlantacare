@@ -1,13 +1,13 @@
 ---
 // One event's own page. Drafts get a page too (so staff can preview them on the
-// real site) but are not listed anywhere and are hidden from search engines.
+// real site) but are not listed anywhere.
 // Archived events get no page.
 import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
-import Button from '../../components/Button.astro';
+import Buttons from '../../components/Buttons.astro';
 import Wave from '../../components/Wave.astro';
 import { loadSite, md } from '../../lib/md';
-import { occurrences, formatDate, timeFor, repeatSummary, isRepeating, isLive, today } from '../../lib/events';
+import { occurrences, formatDate, timeFor, repeatSummary, isRepeating, isLive, today, mapsUrl } from '../../lib/events';
 
 export async function getStaticPaths() {
   const events = await getCollection('events', (e) => (e.data.status ?? 'published') !== 'archived');
@@ -22,7 +22,7 @@ const notYet = !draft && !isLive(ev, now);
 const dates = isRepeating(ev) ? occurrences(ev, now).filter((d) => d >= now).slice(0, 6) : occurrences(ev, now);
 const repeatText = repeatSummary(ev);
 ---
-<Base title={ev.title} description={ev.summary} noindex={draft || notYet}>
+<Base title={ev.title} description={ev.summary}>
   <div class="page-title">
     <p class="h1">Events</p>
     <Wave />
@@ -37,10 +37,10 @@ const repeatText = repeatSummary(ev);
         <ul class="dates">
           {dates.map((d) => <li><span class="date">{formatDate(d)}</span>{timeFor(ev, d) && <span class="time">{timeFor(ev, d)}</span>}</li>)}
         </ul>
-        {ev.location && <p class="location">{ev.location}</p>}
+        {ev.location && <p class="location"><a href={mapsUrl(ev.location)} target="_blank" rel="noopener">{ev.location}</a></p>}
         {ev.image && <img class="photo" src={ev.image} alt={ev.image_alt ?? ''} />}
         <div class="prose" set:html={md(event.body)} />
-        {ev.link_label && ev.link_url && <p><Button href={ev.link_url} label={ev.link_label} /></p>}
+        <Buttons label={ev.link_label} url={ev.link_url} more={ev.buttons} requireUrl />
         <p class="back"><a href="/events/">← All events</a></p>
       </article>
     </div>

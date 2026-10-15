@@ -1,0 +1,15 @@
+---
+// /<page>/admin/ → that page in the editor.
+import { getCollection } from 'astro:content';
+import EditorRedirect from '../../components/EditorRedirect.astro';
+import { editorUrl } from '../../lib/editor';
+
+export async function getStaticPaths() {
+  const pages = await getCollection('pages');
+  return pages
+    .map((page) => ({ params: { slug: page.id }, props: { url: editorUrl(page.filePath), title: page.data.title } }))
+    .filter((p) => p.props.url);
+}
+const { url, title } = Astro.props;
+---
+<EditorRedirect url={url} title={title} />

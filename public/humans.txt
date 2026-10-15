@@ -1,0 +1,18 @@
+/* TEAM */
+  Organization: Atlanta Care Center
+  Site: https://supportatlantacare.com
+  Location: Atlanta, Georgia, USA
+  Serving women since 1982
+
+/* THANKS */
+  Quincy and Jennifer, for porting the site over.
+  Julia, for stepping up to maintain it.
+  The donors, volunteers, churches and businesses who keep the center's
+  services free of charge.
+
+/* SITE */
+  Standards: HTML5, CSS3, Markdown
+  Components: Astro, Sveltia CMS
+  Hosting: Cloudflare Pages
+  Fonts: Roboto Condensed, Herr Von Muellerhoff
+  Last update: 2026-10-15
