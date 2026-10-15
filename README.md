@@ -1,7 +1,7 @@
 # Support Atlanta Care Center — website
 
 A static rebuild of [supportatlantacare.com](https://supportatlantacare.com), the donor-facing
-sister site of [atlantacare.com](https://github.com/acklenx/atlantacare). Same approach: anyone
+sister site of [atlantacare.com](https://github.com/AtlantaCareCenter/atlantacare). Same approach: anyone
 can edit it from a browser, no developer, (almost) no hosting bill.
 
 - **Site:** [Astro](https://astro.build) → plain HTML/CSS. 9 pages, ~1 second build.
@@ -24,6 +24,10 @@ public/docs/                   the privacy policy and terms PDFs
 npm install
 npm run dev            # site at http://localhost:8172, editor at /admin/
 ```
+
+To try the editor against your working copy (no GitHub involved), open `/admin/` in
+Chrome/Edge, choose **Work with Local Repository** and pick this folder. To try a pull
+request before merging, check out its branch in your clone and run the same thing.
 
 ## How editing works
 
@@ -106,7 +110,10 @@ atlantacare.com site is the opposite: indexable, with a sitemap.
 
 ## Going live (Cloudflare Pages + GitHub)
 
-1. The source lives at [acklenx/supportatlantacare](https://github.com/acklenx/supportatlantacare) (`main`).
+1. The source lives at [AtlantaCareCenter/supportatlantacare](https://github.com/AtlantaCareCenter/supportatlantacare)
+   (`main`), owned by the Atlanta Care Center GitHub organization. The editor commits straight to it.
+   Code changes come in as pull requests from a fork (currently acklenx/supportatlantacare): branch in
+   the fork, open a PR against the org repo, an org owner merges it and Cloudflare deploys `main`.
 2. Cloudflare dashboard → **Workers & Pages → Create → Pages → Connect to Git** → pick the repo.
    - Build command: `npm run build`
    - Output directory: `dist`
