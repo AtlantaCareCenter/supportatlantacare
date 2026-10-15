@@ -129,6 +129,9 @@ strong { font-weight: 700; }
 .button:focus-visible { outline: 2px solid var(--red); outline-offset: 4px; }
 .button-center { text-align: center; }
 .button-center .button { margin-top: .5rem; }
+/* a section's buttons (main one + "More buttons") sit side by side, wrapping on small screens */
+.buttons { display: flex; flex-wrap: wrap; gap: .75rem 1rem; align-items: center; }
+.buttons.button-center, .callout .buttons { justify-content: center; }
 
 /* ---------- top bar + logo ---------- */
 .support-banner {

@@ -213,3 +213,27 @@ scenario('every page and event gets an /admin/ shortcut into the editor', (t, sb
   assert.match(html, /<meta name="robots" content="noindex, nofollow"/);
   assert.match(sb.html('/admin/'), /sveltia-cms\.js/, 'the editor itself is still at /admin/');
 });
+
+// ---------------------------------------------------------------- "More buttons": second and third calls to action
+scenario('sections and events can carry several buttons, and junk in that list is ignored', (t, sb) => {
+  sb.page('multi', `---\ntitle: Multi\nsections:\n- _template: callout\n  heading: Join us\n  button_label: Register as a Guest\n  button_url: /guest/\n  buttons:\n  - label: Register as a Sponsor\n    url: /sponsor/\n  - label: Volunteer\n    url: https://example.org/volunteer\n- _template: text\n  body: Only extra buttons, no main one\n  buttons:\n  - label: Second\n    url: /two/\n- _template: two_column\n  left: words\n  right_image: /images/rose.svg\n  button_label: Main\n  buttons:\n  - label: Extra\n    url: /extra/\n- _template: contact_details\n  buttons: null\n- _template: callout\n  heading: Junk\n  button_label: Fine\n  buttons:\n  - {}\n  - label: ''\n    url: /nolabel/\n  - 42\n  - label: Kept\n---\n`);
+  sb.event('gala', `---\ntitle: Gala\nstatus: published\ndates:\n  - date: 2027-03-02\nlink_label: Register as a Guest\nlink_url: /guest/\nbuttons:\n  - label: Register as a Sponsor\n    url: /sponsor/\n  - label: No link so not shown\n  - label: ''\n    url: /x/\n---\n`);
+  sb.event('onlymore', `---\ntitle: Only more\nstatus: published\ndates:\n  - date: 2027-03-02\nbuttons:\n  - label: Sponsor\n    url: /sponsor/\n---\n`);
+  sb.event('junk', `---\ntitle: Junk buttons\nstatus: published\ndates:\n  - date: 2027-03-02\nbuttons: "not a list"\n---\n`);
+  mustBuild(t, sb);
+  const multi = sb.html('/multi/');
+  const main = (html) => html.slice(html.indexOf('<main'), html.indexOf('</main>'));   // not the Donate buttons in the header/footer
+  const links = (html) => [...main(html).matchAll(/<a href="([^"]*)" class="button red-button"[^>]*>([^<]*)<\/a>/g)].map((m) => `${m[2]} -> ${m[1]}`);
+  const got = links(multi);
+  assert.deepEqual(got.slice(0, 3), ['Register as a Guest -> /guest/', 'Register as a Sponsor -> /sponsor/', 'Volunteer -> https://example.org/volunteer'], 'callout: main button first, then the extra ones in order');
+  assert.ok(got.includes('Second -> /two/'), 'a text block with only extra buttons still shows them');
+  assert.ok(got.includes('Extra -> /extra/'), 'two columns');
+  assert.ok(got.includes('Kept -> https://www.myegiving.com/App/Giving/eGiving-96649'), 'a section button without a link goes to the online giving link, as before');
+  assert.ok(!multi.includes('/nolabel/'), 'a button without text is dropped');
+  assert.equal((main(multi).match(/class="buttons/g) ?? []).length, 4, 'one button row per section that has buttons');
+  const gala = sb.html('/events/gala/');
+  assert.deepEqual(links(gala), ['Register as a Guest -> /guest/', 'Register as a Sponsor -> /sponsor/'], 'event: a button without a link is left out rather than pointing at the giving link');
+  assert.deepEqual(links(sb.html('/events/onlymore/')), ['Sponsor -> /sponsor/']);
+  assert.deepEqual(links(sb.html('/events/junk/')), []);
+  assert.ok(sb.html('/events/').includes('Register as a Sponsor'), 'extra buttons show on the events listing too');
+});

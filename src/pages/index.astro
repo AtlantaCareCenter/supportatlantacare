@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import Button from '../components/Button.astro';
+import Buttons from '../components/Buttons.astro';
 import Callout from '../components/Callout.astro';
 import Wave from '../components/Wave.astro';
 import EventList from '../components/EventList.astro';
@@ -31,7 +32,7 @@ const playSrc = `https://player.vimeo.com/video/${hero.video_id}?autoplay=1&dnt=
       <div class="text">
         <h2 set:html={mdInline(intro.heading)} />
         <div class="prose" set:html={md(intro.text)} />
-        <p class="button-center"><Button href={intro.button_url} label={intro.button_label} /></p>
+        <Buttons label={intro.button_label} url={intro.button_url} more={intro.buttons} class="button-center" />
       </div>
       {intro.image && <div><img src={intro.image} alt="" width="700" height="574" /></div>}
     </div>
@@ -67,7 +68,7 @@ const playSrc = `https://player.vimeo.com/video/${hero.video_id}?autoplay=1&dnt=
           <li><span class="circle"><h3>{it.title}</h3>{it.icon && <img src={it.icon} alt="" loading="lazy" />}</span></li>
         ))}
       </ul>
-      <p class="button-center"><Button href={services.button_url} label={services.button_label} /></p>
+      <Buttons label={services.button_label} url={services.button_url} more={services.buttons} class="button-center" />
     </div>
   </section>}
 

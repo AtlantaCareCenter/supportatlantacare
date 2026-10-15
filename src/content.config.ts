@@ -48,7 +48,9 @@ const list = <T extends z.ZodTypeAny>(item: T, where: string) =>
     });
   }, z.array(z.any()));
 
-const button = { button_label: text, button_url: text };
+/** "More buttons": a second or third call to action next to the main one. */
+const moreButtons = list(z.preprocess(obj, z.object({ label: text, url: text })), 'extra button');
+const button = { button_label: text, button_url: text, buttons: moreButtons };
 
 // One markdown file per page. Nested folders become nested URLs
 // (how-to-help/churches.md -> /how-to-help/churches/).
@@ -96,6 +98,7 @@ const events = defineCollection({
     summary: text,
     link_label: text,
     link_url: text,
+    buttons: moreButtons,
     image: text,
     image_alt: text,
   })),

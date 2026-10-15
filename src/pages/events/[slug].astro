@@ -4,7 +4,7 @@
 // Archived events get no page.
 import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
-import Button from '../../components/Button.astro';
+import Buttons from '../../components/Buttons.astro';
 import Wave from '../../components/Wave.astro';
 import { loadSite, md } from '../../lib/md';
 import { occurrences, formatDate, timeFor, repeatSummary, isRepeating, isLive, today, mapsUrl } from '../../lib/events';
@@ -40,7 +40,7 @@ const repeatText = repeatSummary(ev);
         {ev.location && <p class="location"><a href={mapsUrl(ev.location)} target="_blank" rel="noopener">{ev.location}</a></p>}
         {ev.image && <img class="photo" src={ev.image} alt={ev.image_alt ?? ''} />}
         <div class="prose" set:html={md(event.body)} />
-        {ev.link_label && ev.link_url && <p><Button href={ev.link_url} label={ev.link_label} /></p>}
+        <Buttons label={ev.link_label} url={ev.link_url} more={ev.buttons} requireUrl />
         <p class="back"><a href="/events/">← All events</a></p>
       </article>
     </div>

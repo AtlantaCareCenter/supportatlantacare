@@ -65,6 +65,9 @@ there are none, each shows its own "Coming Soon" wording instead.
   the day after its last date. Set them to schedule it or keep it up longer.
 - **Past events:** off by default. Turn on "Show past events" on the Events page's list
   section to add a Past Events list; archived and draft events never appear there.
+- **Buttons:** "Button text/link" is the main button; **More buttons** adds a second or
+  third one beside it (Register as a Guest / Register as a Sponsor). The same "More buttons"
+  list exists on every page section that has a button, and on the home page sections.
 - **Location:** whatever is typed (a venue name, a street address, or both) becomes a
   Google Maps link on the site.
 
