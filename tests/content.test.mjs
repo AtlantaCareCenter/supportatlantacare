@@ -171,3 +171,27 @@ scenario('events list section placed on several pages and home limit nonsense', 
     mustBuild(t, sb, `(limit=${limit})`);
   }
 });
+
+// ---------------------------------------------------------------- private site: nothing is indexable
+scenario('every page, the robots.txt and the headers file tell search engines to stay away', (t, sb) => {
+  sb.event('open', `---\ntitle: Open house\nstatus: published\ndates:\n  - date: 2027-03-02\nlocation: 1801 Peachtree St. Suite 225, Atlanta, GA 30309\n---\n`);
+  mustBuild(t, sb);
+  for (const route of ['/', '/about/', '/events/', '/events/open/', '/admin/']) {
+    const html = sb.html(route);
+    const tags = html.match(/<meta name="robots"[^>]*>/g) ?? [];
+    assert.equal(tags.length, 1, `${route} has exactly one robots meta tag: ${tags.join(' ')}`);
+    assert.match(tags[0], /noindex/); assert.match(tags[0], /nofollow/);
+  }
+  assert.match(sb.read('dist/404.html'), /<meta name="robots" content="noindex, nofollow/);
+  const robots = sb.read('dist/robots.txt');
+  assert.match(robots, /^User-agent: \*$/m); assert.match(robots, /^Disallow: \/$/m);
+  assert.doesNotMatch(robots, /Sitemap:/, 'a private site advertises no sitemap');
+  assert.ok(!sb.exists('dist/sitemap-index.xml') && !sb.exists('dist/sitemap-0.xml'), 'no sitemap is generated');
+  assert.match(sb.read('dist/_headers'), /^\/\*\n\s+X-Robots-Tag: noindex, nofollow/m, 'X-Robots-Tag header for every file (PDFs, images)');
+  assert.match(sb.read('dist/humans.txt'), /\/\* TEAM \*\//);
+  // the event's location is a clickable Google Maps link
+  const page = sb.html('/events/open/');
+  assert.match(page, /<a href="https:\/\/www\.google\.com\/maps\/search\/\?api=1&(amp;)?query=1801%20Peachtree%20St\.%20Suite%20225%2C%20Atlanta%2C%20GA%2030309" target="_blank" rel="noopener">1801 Peachtree St\. Suite 225, Atlanta, GA 30309<\/a>/);
+  assert.match(sb.html('/events/'), /maps\/search\/\?api=1&(amp;)?query=1801%20Peachtree/, 'listing links it too');
+  assert.ok(sb.exists('dist/admin/editor-help.js'), 'editor add-on ships with the site');
+});

@@ -1,0 +1,17 @@
+/* TEAM */
+  Organization: Atlanta Care Center
+  Site: https://supportatlantacare.com
+  Location: Atlanta, Georgia, USA
+  Since: 1982 (the center), this site rebuilt in 2026
+
+/* THANKS */
+  The donors, volunteers, churches and businesses who keep the center's
+  services free of charge.
+
+/* SITE */
+  Standards: HTML5, CSS3, Markdown
+  Components: Astro, Sveltia CMS
+  Hosting: Cloudflare Pages
+  Editing: /admin/
+  Fonts: Roboto Condensed, Herr Von Muellerhoff
+  Last update: 2026-10-15

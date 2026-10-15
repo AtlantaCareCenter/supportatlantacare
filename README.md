@@ -61,6 +61,8 @@ there are none, each shows its own "Coming Soon" wording instead.
   the day after its last date. Set them to schedule it or keep it up longer.
 - **Past events:** off by default. Turn on "Show past events" on the Events page's list
   section to add a Past Events list; archived and draft events never appear there.
+- **Location:** whatever is typed (a venue name, a street address, or both) becomes a
+  Google Maps link on the site.
 
 Two example events are included as drafts to duplicate from.
 
@@ -73,6 +75,11 @@ Two example events are included as drafts to duplicate from.
 - On a laptop, open `http://localhost:8172/admin/` in Chrome/Edge and choose
   **Work with Local Repository** → pick this folder. Edits are written to disk
   and the dev server reloads.
+- Required fields are marked `*`. If Save is refused because something is missing or
+  invalid, a banner at the top names each field (click one to jump to it), the page scrolls
+  to the first one and every one of them flashes red until it's fixed. That is
+  `public/admin/editor-help.js`, a small add-on that only watches the editor's own
+  "This field is required" notes, so a Sveltia update can't break it.
 
 ## Tests: nothing an editor saves can break the build
 
@@ -87,6 +94,15 @@ of events), and builds each. `tests/events.test.mjs` checks event scheduling and
 The content schema is deliberately forgiving: bad values are ignored and a section it can't
 understand is skipped with a `[content] skipped ...` warning in the Cloudflare build log,
 instead of failing the deploy. Run the tests before merging any code change.
+
+## Private: not for search engines
+
+This site is for supporters we send the link to, so it asks search engines to stay away in
+three places (the tests check all of them): a `noindex, nofollow` robots meta tag on every
+page (`src/layouts/Base.astro` and `src/pages/admin.astro`), `public/robots.txt`
+(`Disallow: /`), and an `X-Robots-Tag` response header on every file including the PDFs
+(`public/_headers`, read by Cloudflare Pages). There is deliberately no sitemap. The public
+atlantacare.com site is the opposite: indexable, with a sitemap.
 
 ## Going live (Cloudflare Pages + GitHub)
 

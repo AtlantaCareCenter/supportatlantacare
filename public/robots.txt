@@ -1,4 +1,5 @@
+# supportatlantacare.com is for supporters we send the link to. Please do not index it.
+# (Every page also carries <meta name="robots" content="noindex, nofollow"> and an
+# X-Robots-Tag header, which is what actually keeps well-behaved crawlers out.)
 User-agent: *
-Allow: /
-Disallow: /admin/
-Sitemap: https://supportatlantacare.com/sitemap-index.xml
+Disallow: /
