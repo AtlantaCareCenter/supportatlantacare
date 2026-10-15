@@ -17,12 +17,14 @@
       color: hsl(210 10% 35%); background: hsl(210 5% 95%); }
     .acc-required-note b { color: hsl(0 85% 35%); font-size: 1.1em; }
     ${FIELD} > header .required { color: hsl(0 85% 35%) !important; font-weight: 700; font-size: 1.1em; }
-    ${FIELD}.acc-invalid { outline: 2px solid hsl(0 70% 50%); outline-offset: 6px; border-radius: 4px; }
+    /* The box is drawn inside the field (inset shadow + padding) because the form pane
+       scrolls and would clip anything drawn outside the field's edges. */
+    ${FIELD}.acc-invalid { padding: 10px 12px; border-radius: 6px; box-shadow: inset 0 0 0 2px hsl(0 70% 50%); }
     ${FIELD}.acc-invalid > header h4 { color: hsl(0 85% 35%); }
     ${FIELD}.acc-flash { animation: acc-flash 0.5s ease-in-out 3; }
     @keyframes acc-flash {
-      0%, 100% { outline-color: hsl(0 70% 50%); box-shadow: none; }
-      50% { outline-color: hsl(0 100% 40%); outline-width: 4px; box-shadow: 0 0 0 10px hsl(0 90% 60% / .25); }
+      0%, 100% { box-shadow: inset 0 0 0 2px hsl(0 70% 50%); background-color: transparent; }
+      50% { box-shadow: inset 0 0 0 5px hsl(0 100% 40%); background-color: hsl(0 90% 60% / .18); }
     }
     .acc-errors { position: fixed; top: 12px; left: 50%; transform: translateX(-50%); z-index: 100000;
       max-width: min(720px, calc(100vw - 32px)); padding: 12px 44px 12px 16px; border-radius: 8px;
