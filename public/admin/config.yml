@@ -175,6 +175,7 @@ collections:
       - label: Page sections
         name: sections
         widget: list
+        required: false
         typeKey: _template
         types: &section_types
               - label: Call to action

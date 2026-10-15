@@ -99,6 +99,12 @@ try {
   await clickText(/^Save$/); await sleep(600);
   assert.equal(await banner(), null, 'stays closed for the same errors');
   assert.match(await className(field('title')), /acc-invalid/, 'the field itself stays marked');
+  // A page with just a title and intro text, and no sections, must be saveable.
+  await page.goto(base + '/#/collections/pages/new', { waitUntil: 'networkidle0' });
+  await sleep(2000);
+  await page.type(`${field('title')} input`, 'Plain page');
+  await clickText(/^Save$/); await sleep(800);
+  assert.equal(await banner(), null, 'a page needs no sections to save');
   assert.deepEqual(errors, [], 'no script errors');
   console.log('editor add-on: all checks passed');
 } finally {
