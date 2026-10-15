@@ -195,3 +195,21 @@ scenario('every page, the robots.txt and the headers file tell search engines to
   assert.match(sb.html('/events/'), /maps\/search\/\?api=1&(amp;)?query=1801%20Peachtree/, 'listing links it too');
   assert.ok(sb.exists('dist/admin/editor-help.js'), 'editor add-on ships with the site');
 });
+
+// ---------------------------------------------------------------- "/admin" after any page url opens that page in the editor
+scenario('every page and event gets an /admin/ shortcut into the editor', (t, sb) => {
+  sb.event('open', `---\ntitle: Open house\nstatus: published\ndates:\n  - date: 2027-03-02\n---\n`);
+  sb.page('deep/nested/thing', `---\ntitle: Deep\n---\n`);   // no editor collection covers this folder... except "pages" does
+  mustBuild(t, sb);
+  const target = (route) => sb.html(route + 'admin/').match(/<meta http-equiv="refresh" content="0; url=([^"]+)"/)?.[1];
+  assert.equal(target('/about/'), '/admin/#/collections/pages/entries/about');
+  assert.equal(target('/how-to-help/'), '/admin/#/collections/pages/entries/how-to-help');
+  assert.equal(target('/how-to-help/individuals/'), '/admin/#/collections/how-to-help/entries/individuals', 'sub-folder collection wins over the parent');
+  assert.equal(target('/events/'), '/admin/#/collections/pages/entries/events', 'the Events page itself');
+  assert.equal(target('/events/open/'), '/admin/#/collections/events/entries/open');
+  assert.equal(target('/deep/nested/thing/'), '/admin/#/collections/pages/entries/deep/nested/thing');
+  const html = sb.html('/about/admin/');
+  assert.match(html, /const url = "\/admin\/#\/collections\/pages\/entries\/about";\s*location\.replace\(url\)/, 'script redirect too, for browsers that ignore meta refresh');
+  assert.match(html, /<meta name="robots" content="noindex, nofollow"/);
+  assert.match(sb.html('/admin/'), /sveltia-cms\.js/, 'the editor itself is still at /admin/');
+});

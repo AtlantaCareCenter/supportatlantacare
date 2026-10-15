@@ -105,6 +105,10 @@ try {
   await page.type(`${field('title')} input`, 'Plain page');
   await clickText(/^Save$/); await sleep(800);
   assert.equal(await banner(), null, 'a page needs no sections to save');
+  // The route the "/admin/" page shortcuts send people to (src/lib/editor.ts) opens that entry.
+  await page.goto(base + '/#/collections/pages/entries/plain-page', { waitUntil: 'networkidle0' });
+  await sleep(2000);
+  assert.equal(await page.$eval(`${field('title')} input`, (i) => i.value), 'Plain page', 'entry route used by the /admin/ shortcuts opens the entry');
   assert.deepEqual(errors, [], 'no script errors');
   console.log('editor add-on: all checks passed');
 } finally {

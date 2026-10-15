@@ -79,6 +79,9 @@ Two example events are included as drafts to duplicate from.
 - On a laptop, open `http://localhost:8172/admin/` in Chrome/Edge and choose
   **Work with Local Repository** → pick this folder. Edits are written to disk
   and the dev server reloads.
+- **Shortcut:** add `admin/` to any page's address to open that page in the editor, e.g.
+  `supportatlantacare.com/about/admin/` or `.../events/spring-5k/admin/`. (The home page and
+  Site Settings are a click away from `/admin/` itself.)
 - Required fields are marked `*`. If Save is refused because something is missing or
   invalid, a banner at the top names each field (click one to jump to it), the page scrolls
   to the first one and every one of them flashes red until it's fixed. That is
