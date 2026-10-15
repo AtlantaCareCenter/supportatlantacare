@@ -237,3 +237,40 @@ scenario('sections and events can carry several buttons, and junk in that list i
   assert.deepEqual(links(sb.html('/events/junk/')), []);
   assert.ok(sb.html('/events/').includes('Register as a Sponsor'), 'extra buttons show on the events listing too');
 });
+
+// ---------------------------------------------------------------- short links & QR codes
+scenario('short links become a redirect table + Function routes, and are listed with QR codes at /admin/links/', (t, sb) => {
+  sb.write('src/content/links/7k.md', `---\ncode: 7k\nurl: https://www.myegiving.com/App/Giving/eGiving-96649\nlabel: Giving QR for the banquet\n---\n`);
+  sb.write('src/content/links/ev.md', `---\ncode: ev\nurl: /events/\n---\n`);
+  sb.write('src/content/links/bad.md', `---\ncode: bad\nurl: https://example.org\n---\n`);
+  sb.write('src/content/links/x1.md', `---\ncode: x1\nurl: nowhere\n---\n`);
+  sb.write('src/content/links/dupe.md', `---\ncode: 7k\nurl: https://example.org/dupe\n---\n`);
+  sb.write('src/content/links/null.md', `---\ncode: null\nurl: null\nlabel: null\n---\n`);
+  sb.write('src/content/links/empty.md', ``);
+  sb.page('ab', `---\ntitle: A real page at /ab/\n---\n`);
+  sb.write('src/content/links/ab.md', `---\ncode: ab\nurl: https://example.org/hidden\n---\n`);
+  const out = mustBuild(t, sb);
+  assert.deepEqual(JSON.parse(sb.read('dist/short-links.json')), { '7k': 'https://www.myegiving.com/App/Giving/eGiving-96649', ev: '/events/' }, 'only valid, unique, non-colliding links');
+  const routes = JSON.parse(sb.read('dist/_routes.json'));
+  assert.deepEqual(routes.include, ['/api/*', '/7k*', '/ev*'], 'only short codes and the stats API invoke Functions');
+  assert.match(out, /short link "ab".*already a page/, 'collision with a real page is reported');
+  assert.match(out, /short link "dupe".*already used/);
+  const html = sb.html('/admin/links/');
+  assert.match(html, /supportatlantacare\.com\/7k/);
+  assert.match(html, /Giving QR for the banquet/);
+  assert.match(html, /data-text="https:\/\/supportatlantacare\.com\/ev"/, 'QR code text is the full short URL');
+  assert.doesNotMatch(html, /\/x1"|\/bad"|nowhere|example\.org\/hidden/, 'skipped links are not listed');
+  assert.match(html, /next free code: <code[^>]*>aa<\/code>/);
+  assert.match(html, /<meta name="robots" content="noindex/);
+  assert.ok(sb.exists('dist/ab/index.html'), 'the real page still exists');
+});
+
+scenario('with no short links at all the build still writes the tables and the page says so', (t, sb) => {
+  sb.clear('src/content/links');
+  mustBuild(t, sb);
+  assert.equal(sb.read('dist/short-links.json'), '{}');
+  assert.deepEqual(JSON.parse(sb.read('dist/_routes.json')).include, ['/api/*']);
+  assert.match(sb.html('/admin/links/'), /None yet/);
+  sb.remove('src/content/links');
+  mustBuild(t, sb, '(links folder deleted)');
+});

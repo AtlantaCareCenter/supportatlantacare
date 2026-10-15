@@ -337,3 +337,25 @@ collections:
     preview_path: "how-to-help/{{slug}}/"
     summary: "{{heading}}"
     fields: *page_fields
+
+  - name: links
+    label: Short links & QR codes
+    label_singular: Short link
+    description: "Short addresses like supportatlantacare.com/7k for print and QR codes. After saving, see the QR codes at /admin/links/ (about a minute for the site to rebuild)."
+    icon: qr_code
+    folder: src/content/links
+    extension: md
+    format: frontmatter
+    create: true
+    slug: "{{fields.code}}"
+    identifier_field: code
+    summary: "/{{code}} → {{label}}"
+    sortable_fields: [code, label]
+    fields:
+      - { label: Code (two letters or digits), name: code, widget: string,
+          pattern: ['^[a-z0-9]{2}$', "Exactly two lowercase letters or digits, e.g. 7k or ab. /admin/links/ shows which are free."],
+          hint: "This becomes the short address: supportatlantacare.com/<code>. It can't be changed after saving; make a new one instead." }
+      - { label: Goes to, name: url, widget: string,
+          pattern: ['^(https?://[^ ]+|/[^ ]*)$', "A full address starting with https://, or a page on this site starting with /"],
+          hint: "e.g. https://www.myegiving.com/App/Giving/eGiving-96649 or /events/spring-5k/" }
+      - { label: What it's for, name: label, widget: string, required: false, hint: "e.g. Banquet invitation QR code" }

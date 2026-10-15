@@ -105,6 +105,30 @@ The content schema is deliberately forgiving: bad values are ignored and a secti
 understand is skipped with a `[content] skipped ...` warning in the Cloudflare build log,
 instead of failing the deploy. Run the tests before merging any code change.
 
+## Short links and QR codes
+
+`supportatlantacare.com/7k` style links for print and QR codes: two letters or digits
+(1296 possible), created in the editor under **Short links & QR codes** (code, where it
+goes, what it's for). `/admin/links/` lists them with QR codes to download as SVG or PNG,
+shows the next free code, and makes a QR code for any address. Short links work about a
+minute after saving, on the live site only (not on `localhost`).
+
+How it works: the build writes `short-links.json` (code → URL) and `_routes.json`;
+`functions/[code].js` is a Cloudflare Pages Function that answers `/<code>` with a 302 and
+records the click; `functions/api/stats.js` serves the counts that `/admin/links/` shows
+(clicks, unique visitors as an anonymous hash of IP + browser, this week / month, last click).
+
+**One-time setup for click counting** (links redirect fine without it):
+Cloudflare dashboard → Workers & Pages → D1 → Create database (any name, e.g.
+`supportatlantacare-links`). Then Pages project → Settings → Bindings → Add → D1 database,
+variable name `DB`, pick the database, for both Production and Preview. Redeploy once. The
+table is created automatically on the first click. Free tier limits (5M reads, 100k writes a
+day) are far beyond what a QR code on a flyer produces.
+
+Codes are case-insensitive and can't hide a real page: a short link whose code matches a
+page folder is skipped with a warning in the build log. `npm test` covers the logic and the
+Functions (`tests/short-links*.test.mjs`).
+
 ## Private: not for search engines
 
 This site is for supporters we send the link to, so it asks search engines to stay away in

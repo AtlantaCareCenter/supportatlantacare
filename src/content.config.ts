@@ -110,4 +110,10 @@ const singles = defineCollection({
   schema: z.any(),
 });
 
-export const collections = { pages, events, singles };
+// Short links (supportatlantacare.com/<code>), one file per link, named by the code.
+const links = defineCollection({
+  loader: glob({ pattern: ['*.md', '!README.md'], base: './src/content/links' }),
+  schema: z.preprocess(obj, z.object({ code: text, url: text, label: text })),
+});
+
+export const collections = { pages, events, singles, links };

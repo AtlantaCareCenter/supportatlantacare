@@ -9,7 +9,7 @@ import Wave from '../components/Wave.astro';
 import Button from '../components/Button.astro';
 import { md, site } from '../lib/md';
 
-const { title, description } = Astro.props;
+const { title, description } = Astro.props;   // noindex prop accepted and ignored: every page here is noindex
 const isHome = Astro.url.pathname === '/';
 const pageTitle = title ? `${title} | ${site.name}` : `${site.name} | ${site.tagline}`;
 const year = new Date().getFullYear();
