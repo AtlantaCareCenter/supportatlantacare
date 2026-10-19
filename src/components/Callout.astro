@@ -1,12 +1,12 @@
 ---
-import Button from './Button.astro';
+import Buttons from './Buttons.astro';
 import { md, mdInline } from '../lib/md';
-const { heading, text, button_label, button_url } = Astro.props;
+const { heading, text, button_label, button_url, buttons } = Astro.props;
 ---
 <section class="section callout">
   <div class="container inner">
     <h2 set:html={mdInline(heading)} />
     {text && <div class="prose" set:html={md(text)} />}
-    <Button href={button_url} label={button_label} />
+    <Buttons label={button_label} url={button_url} more={buttons} />
   </div>
 </section>

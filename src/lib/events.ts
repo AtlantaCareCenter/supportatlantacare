@@ -201,3 +201,9 @@ export const timeFor = (ev: EventData, date: string) => {
   const exact = list.find((d) => validDate(d.date) === date);
   return formatTime(exact ?? list[0] ?? { date });
 };
+
+/** A Google Maps search link for whatever the editor typed as the location (a venue name, an address, or both). */
+export function mapsUrl(location: unknown): string {
+  const q = typeof location === 'string' ? location.replace(/\s+/g, ' ').trim() : '';
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
+}

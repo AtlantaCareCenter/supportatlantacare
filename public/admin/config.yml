@@ -102,6 +102,16 @@ collections:
                 hint: "Leave blank for no button." }
               - &btn_url { label: Button link, name: button_url, widget: string, required: false,
                 hint: "e.g. /how-to-help/ or the online giving link." }
+              - &btn_more
+                label: More buttons
+                name: buttons
+                widget: list
+                required: false
+                summary: "{{fields.label}}"
+                hint: "Optional. Adds a second or third button next to the one above, e.g. Register as a Sponsor."
+                fields:
+                  - { label: Button text, name: label, widget: string }
+                  - { label: Button link, name: url, widget: string }
           - label: Ways to help section
             name: support
             widget: object
@@ -134,6 +144,7 @@ collections:
                   - { label: Icon (faint, behind the title), name: icon, widget: image }
               - *btn_label
               - *btn_url
+              - *btn_more
           - label: About section
             name: callout
             widget: object
@@ -142,6 +153,7 @@ collections:
               - { label: Text, name: text, widget: markdown, minimal: true, required: false }
               - *btn_label
               - *btn_url
+              - *btn_more
           - label: Events section
             name: events
             widget: object
@@ -175,6 +187,7 @@ collections:
       - label: Page sections
         name: sections
         widget: list
+        required: false
         typeKey: _template
         types: &section_types
               - label: Call to action
@@ -186,6 +199,7 @@ collections:
                   - { label: Text under heading, name: text, widget: markdown, required: false, minimal: true }
                   - *btn_label
                   - *btn_url
+                  - *btn_more
               - label: Text block
                 name: text
                 summary: "{{fields.body | truncate(60)}}"
@@ -198,6 +212,7 @@ collections:
                       options: [{ label: "No", value: 1 }, { label: "Yes", value: 3 }] }
                   - *btn_label
                   - *btn_url
+                  - *btn_more
                   - { label: Anchor (for links like /page/#name), name: anchor, widget: string, required: false }
               - label: Two columns
                 name: two_column
@@ -213,6 +228,7 @@ collections:
                       options: [{ label: "No", value: "" }, { label: "Yes", value: grey }] }
                   - *btn_label
                   - *btn_url
+                  - *btn_more
               - label: Icon columns (Individuals / Businesses / Churches)
                 name: help_columns
                 summary: "{{fields.items.length}} columns"
@@ -243,8 +259,7 @@ collections:
                   - { label: Note above the phone number, name: note, widget: markdown, required: false, minimal: true }
                   - *btn_label
                   - *btn_url
-            
-
+                  - *btn_more
   - name: events
     label: Events
     label_singular: Event
@@ -296,6 +311,15 @@ collections:
       - { label: Photo description, name: image_alt, widget: string, required: false }
       - { label: Button text, name: link_label, widget: string, required: false, hint: "e.g. Reserve a Seat, RSVP" }
       - { label: Button link, name: link_url, widget: string, required: false }
+      - label: More buttons
+        name: buttons
+        widget: list
+        required: false
+        summary: "{{fields.label}}"
+        hint: "Optional. A second or third button, e.g. Register as a Guest / Register as a Sponsor."
+        fields:
+          - { label: Button text, name: label, widget: string }
+          - { label: Button link, name: url, widget: string }
       - { label: Go live on, name: publish_on, widget: datetime, format: YYYY-MM-DD, time_format: false, required: false,
           hint: "Leave blank to show it as soon as it's published." }
       - { label: Remove after, name: remove_after, widget: datetime, format: YYYY-MM-DD, time_format: false, required: false,
@@ -313,3 +337,25 @@ collections:
     preview_path: "how-to-help/{{slug}}/"
     summary: "{{heading}}"
     fields: *page_fields
+
+  - name: links
+    label: Short links & QR codes
+    label_singular: Short link
+    description: "Short addresses like supportatlantacare.com/7k for print and QR codes. After saving, see the QR codes at /admin/links/ (about a minute for the site to rebuild)."
+    icon: qr_code
+    folder: src/content/links
+    extension: md
+    format: frontmatter
+    create: true
+    slug: "{{fields.code}}"
+    identifier_field: code
+    summary: "/{{code}} → {{label}}"
+    sortable_fields: [code, label]
+    fields:
+      - { label: Code (two letters or digits), name: code, widget: string,
+          pattern: ['^[a-z0-9]{2}$', "Exactly two lowercase letters or digits, e.g. 7k or ab. /admin/links/ shows which are free."],
+          hint: "This becomes the short address: supportatlantacare.com/<code>. It can't be changed after saving; make a new one instead." }
+      - { label: Goes to, name: url, widget: string,
+          pattern: ['^(https?://[^ ]+|/[^ ]*)$', "A full address starting with https://, or a page on this site starting with /"],
+          hint: "e.g. https://www.myegiving.com/App/Giving/eGiving-96649 or /events/spring-5k/" }
+      - { label: What it's for, name: label, widget: string, required: false, hint: "e.g. Banquet invitation QR code" }

@@ -9,7 +9,7 @@ import Wave from '../components/Wave.astro';
 import Button from '../components/Button.astro';
 import { md, site } from '../lib/md';
 
-const { title, description, noindex = false } = Astro.props;
+const { title, description } = Astro.props;   // noindex prop accepted and ignored: every page here is noindex
 const isHome = Astro.url.pathname === '/';
 const pageTitle = title ? `${title} | ${site.name}` : `${site.name} | ${site.tagline}`;
 const year = new Date().getFullYear();
@@ -19,11 +19,12 @@ const nl2br = (s: string) => (s || '').replace(/\n/g, '<br>');
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="robots" content="noindex, nofollow" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- This site is for people we send the link to, not for search engines: every page is
+       noindex/nofollow here, in public/robots.txt and in the X-Robots-Tag header (public/_headers). -->
+  <meta name="robots" content="noindex, nofollow, noarchive" />
   <title>{pageTitle}</title>
   {description && <meta name="description" content={description} />}
-  {noindex && <meta name="robots" content="noindex" />}
   <link rel="icon" href="/favicon.ico" sizes="16x16" />
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
   <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />

@@ -6,12 +6,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="robots" content="noindex" />
+  <meta name="robots" content="noindex, nofollow" />
   <title>Edit site — Support Atlanta Care Center</title>
   <link rel="icon" href="/favicon.ico" />
   <link href="/admin/config.yml" type="text/yaml" rel="cms-config-url" />
 </head>
 <body>
   <script is:inline src="https://unpkg.com/@sveltia/cms@0/dist/sveltia-cms.js"></script>
+  <!-- Names missing/invalid fields, scrolls to the first one and flashes them. See public/admin/editor-help.js -->
+  <script is:inline src="/admin/editor-help.js"></script>
 </body>
 </html>

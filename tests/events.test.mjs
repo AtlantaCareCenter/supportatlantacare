@@ -90,3 +90,11 @@ test('custom summary wins over the generated one', () => {
   const e = ev({ dates: [{ date: '2026-11-06' }], repeat: { rule: 'monthly_weekday', summary: 'First Fridays, 7:30 am' } });
   assert.equal(repeatSummary(e), 'First Fridays, 7:30 am');
 });
+
+test('a location becomes a Google Maps search link, whatever was typed', async () => {
+  const { mapsUrl } = await import('../src/lib/events.ts');
+  assert.equal(mapsUrl('Peachtree Road UMC, 3180 Peachtree Rd NE, Atlanta'), 'https://www.google.com/maps/search/?api=1&query=Peachtree%20Road%20UMC%2C%203180%20Peachtree%20Rd%20NE%2C%20Atlanta');
+  assert.equal(mapsUrl('  Zoom  \n(online) '), 'https://www.google.com/maps/search/?api=1&query=Zoom%20(online)');
+  assert.equal(mapsUrl('<b>x</b>&y'), 'https://www.google.com/maps/search/?api=1&query=%3Cb%3Ex%3C%2Fb%3E%26y');
+  for (const bad of [null, undefined, 42, {}]) assert.equal(mapsUrl(bad), 'https://www.google.com/maps/search/?api=1&query=');
+});

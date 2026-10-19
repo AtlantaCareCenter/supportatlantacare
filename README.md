@@ -1,7 +1,7 @@
 # Support Atlanta Care Center — website
 
 A static rebuild of [supportatlantacare.com](https://supportatlantacare.com), the donor-facing
-sister site of [atlantacare.com](https://github.com/acklenx/atlantacare). Same approach: anyone
+sister site of [atlantacare.com](https://github.com/AtlantaCareCenter/atlantacare). Same approach: anyone
 can edit it from a browser, no developer, (almost) no hosting bill.
 
 - **Site:** [Astro](https://astro.build) → plain HTML/CSS. 9 pages, ~1 second build.
@@ -24,6 +24,10 @@ public/docs/                   the privacy policy and terms PDFs
 npm install
 npm run dev            # site at http://localhost:8172, editor at /admin/
 ```
+
+To try the editor against your working copy (no GitHub involved), open `/admin/` in
+Chrome/Edge, choose **Work with Local Repository** and pick this folder. To try a pull
+request before merging, check out its branch in your clone and run the same thing.
 
 ## How editing works
 
@@ -61,6 +65,11 @@ there are none, each shows its own "Coming Soon" wording instead.
   the day after its last date. Set them to schedule it or keep it up longer.
 - **Past events:** off by default. Turn on "Show past events" on the Events page's list
   section to add a Past Events list; archived and draft events never appear there.
+- **Buttons:** "Button text/link" is the main button; **More buttons** adds a second or
+  third one beside it (Register as a Guest / Register as a Sponsor). The same "More buttons"
+  list exists on every page section that has a button, and on the home page sections.
+- **Location:** whatever is typed (a venue name, a street address, or both) becomes a
+  Google Maps link on the site.
 
 Two example events are included as drafts to duplicate from.
 
@@ -73,6 +82,14 @@ Two example events are included as drafts to duplicate from.
 - On a laptop, open `http://localhost:8172/admin/` in Chrome/Edge and choose
   **Work with Local Repository** → pick this folder. Edits are written to disk
   and the dev server reloads.
+- **Shortcut:** add `admin/` to any page's address to open that page in the editor, e.g.
+  `supportatlantacare.com/about/admin/` or `.../events/spring-5k/admin/`. (The home page and
+  Site Settings are a click away from `/admin/` itself.)
+- Required fields are marked `*`. If Save is refused because something is missing or
+  invalid, a banner at the top names each field (click one to jump to it), the page scrolls
+  to the first one and every one of them flashes red until it's fixed. That is
+  `public/admin/editor-help.js`, a small add-on that only watches the editor's own
+  "This field is required" notes, so a Sveltia update can't break it.
 
 ## Tests: nothing an editor saves can break the build
 
@@ -88,9 +105,45 @@ The content schema is deliberately forgiving: bad values are ignored and a secti
 understand is skipped with a `[content] skipped ...` warning in the Cloudflare build log,
 instead of failing the deploy. Run the tests before merging any code change.
 
+## Short links and QR codes
+
+`supportatlantacare.com/7k` style links for print and QR codes: two letters or digits
+(1296 possible), created in the editor under **Short links & QR codes** (code, where it
+goes, what it's for). `/admin/links/` lists them with QR codes to download as SVG or PNG,
+shows the next free code, and makes a QR code for any address. Short links work about a
+minute after saving, on the live site only (not on `localhost`).
+
+How it works: the build writes `short-links.json` (code → URL) and `_routes.json`;
+`functions/[code].js` is a Cloudflare Pages Function that answers `/<code>` with a 302 and
+records the click; `functions/api/stats.js` serves the counts that `/admin/links/` shows
+(clicks, unique visitors as an anonymous hash of IP + browser, this week / month, last click).
+
+**One-time setup for click counting** (links redirect fine without it):
+Cloudflare dashboard → Workers & Pages → D1 → Create database (any name, e.g.
+`supportatlantacare-links`). Then Pages project → Settings → Bindings → Add → D1 database,
+variable name `DB`, pick the database, for both Production and Preview. Redeploy once. The
+table is created automatically on the first click. Free tier limits (5M reads, 100k writes a
+day) are far beyond what a QR code on a flyer produces.
+
+Codes are case-insensitive and can't hide a real page: a short link whose code matches a
+page folder is skipped with a warning in the build log. `npm test` covers the logic and the
+Functions (`tests/short-links*.test.mjs`).
+
+## Private: not for search engines
+
+This site is for supporters we send the link to, so it asks search engines to stay away in
+three places (the tests check all of them): a `noindex, nofollow` robots meta tag on every
+page (`src/layouts/Base.astro` and `src/pages/admin.astro`), `public/robots.txt`
+(`Disallow: /`), and an `X-Robots-Tag` response header on every file including the PDFs
+(`public/_headers`, read by Cloudflare Pages). There is deliberately no sitemap. The public
+atlantacare.com site is the opposite: indexable, with a sitemap.
+
 ## Going live (Cloudflare Pages + GitHub)
 
-1. The source lives at [acklenx/supportatlantacare](https://github.com/acklenx/supportatlantacare) (`main`).
+1. The source lives at [AtlantaCareCenter/supportatlantacare](https://github.com/AtlantaCareCenter/supportatlantacare)
+   (`main`), owned by the Atlanta Care Center GitHub organization. The editor commits straight to it.
+   Code changes come in as pull requests from a fork (currently acklenx/supportatlantacare): branch in
+   the fork, open a PR against the org repo, an org owner merges it and Cloudflare deploys `main`.
 2. Cloudflare dashboard → **Workers & Pages → Create → Pages → Connect to Git** → pick the repo.
    - Build command: `npm run build`
    - Output directory: `dist`

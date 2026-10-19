@@ -129,6 +129,9 @@ strong { font-weight: 700; }
 .button:focus-visible { outline: 2px solid var(--red); outline-offset: 4px; }
 .button-center { text-align: center; }
 .button-center .button { margin-top: .5rem; }
+/* a section's buttons (main one + "More buttons") sit side by side, wrapping on small screens */
+.buttons { display: flex; flex-wrap: wrap; gap: .75rem 1rem; align-items: center; }
+.buttons.button-center, .callout .buttons { justify-content: center; }
 
 /* ---------- top bar + logo ---------- */
 .support-banner {
@@ -312,6 +315,8 @@ body.nav-open { overflow: hidden; }
 .event-card .time, .event-detail .time { margin-left: .75rem; color: #666; }
 .event-card .next, .event-card .location, .event-detail .location { margin: 0 0 .6rem; }
 .event-card .location::before, .event-detail .location::before { content: "\1F4CD "; }
+.event-card .location a, .event-detail .location a { text-decoration: underline; text-decoration-color: var(--grey); }
+.event-card .location a:hover, .event-detail .location a:hover { color: var(--red); }
 .event-card .prose { margin: .75rem 0 1rem; }
 .event-card .more { color: var(--red); text-decoration: none; }
 .event-card .more:hover { text-decoration: underline; }

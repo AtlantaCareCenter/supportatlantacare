@@ -2,9 +2,9 @@
 // One event in a listing. Carries data-* attributes so a small script can
 // re-check "is this still upcoming?" on the visitor's actual date, since the
 // site only rebuilds when someone saves in the editor.
-import Button from './Button.astro';
+import Buttons from './Buttons.astro';
 import { md } from '../lib/md';
-import { occurrences, nextDate, lastDate, formatDate, timeFor, repeatSummary, isRepeating, openEnded, today } from '../lib/events';
+import { occurrences, nextDate, lastDate, formatDate, timeFor, repeatSummary, isRepeating, openEnded, today, mapsUrl } from '../lib/events';
 
 const { event, body, compact = false, mode = 'upcoming' } = Astro.props;
 const ev = event.data;
@@ -28,9 +28,9 @@ const url = `/events/${event.id}/`;
       ))}
     </ul>
     {isRepeating(ev) && next && <p class="next">Next: <span class="next-date" data-dates={all.join(',')}>{formatDate(next)}</span></p>}
-    {ev.location && <p class="location">{ev.location}</p>}
+    {ev.location && <p class="location"><a href={mapsUrl(ev.location)} target="_blank" rel="noopener">{ev.location}</a></p>}
     {!compact && body && <div class="prose" set:html={md(body)} />}
-    {!compact && ev.link_label && ev.link_url && <p><Button href={ev.link_url} label={ev.link_label} /></p>}
+    {!compact && <Buttons label={ev.link_label} url={ev.link_url} more={ev.buttons} requireUrl />}
     {compact && <p><a class="more" href={url}>Details</a></p>}
   </div>
 </article>

@@ -1,0 +1,18 @@
+---
+// A tiny page at "<page url>admin/" that sends the visitor straight to that page's entry in
+// the editor, so anyone looking at a page can edit it by adding /admin to the address.
+const { url, title } = Astro.props;
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta http-equiv="refresh" content={`0; url=${url}`} />
+  <title>Edit “{title}”</title>
+  <script is:inline define:vars={{ url }}>location.replace(url);</script>
+</head>
+<body>
+  <p>Opening the editor… <a href={url}>Edit “{title}”</a></p>
+</body>
+</html>

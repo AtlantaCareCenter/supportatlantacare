@@ -1,0 +1,15 @@
+---
+// /events/<event>/admin/ → that event in the editor.
+import { getCollection } from 'astro:content';
+import EditorRedirect from '../../../components/EditorRedirect.astro';
+import { editorUrl } from '../../../lib/editor';
+
+export async function getStaticPaths() {
+  const events = await getCollection('events');
+  return events
+    .map((event) => ({ params: { slug: event.id }, props: { url: editorUrl(event.filePath), title: event.data.title } }))
+    .filter((p) => p.props.url);
+}
+const { url, title } = Astro.props;
+---
+<EditorRedirect url={url} title={title} />
