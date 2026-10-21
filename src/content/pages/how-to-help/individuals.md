@@ -48,6 +48,18 @@ sections:
 
       Whether it’s serving as a Patient Advocate, organizing our Clothes Closet, or assisting with data entry, we have a place for you to get involved. [Contact us](/contact/) and get involved today!
     center: false
+  - _template: text
+    body: |-
+      ## Additional Ways to Help
+
+      **Stay Connected with our Monthly Newsletter**
+
+      Click [here ](https://lp.constantcontactpages.com/sl/J6SxBGZ)to sign up to stay connected to our team and be reminded to pray! 
+
+      **Fulfill Baby Supply Orders** 
+
+      Directly bless a mother in our Confidently Cared For Program! Click [here ](https://conta.cc/4iZeZcM)to learn more.
+    center: false
 ---
 
 You play a significant role in helping our patients in Atlanta make life-affirming choices. Without your faithful support, we could not provide our patients with [holistic services](/how-we-serve/), including:
