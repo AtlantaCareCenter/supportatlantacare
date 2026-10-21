@@ -23,7 +23,7 @@ sections:
     text: |-
       **Atlanta Care Center Is Hiring!**
 
-      If you have family or friends who are looking for a change in their career or feel called to ministry work, please pass this along! We are currently hiring for the following positions:
+      Whether you are an individual or representing a church or business, please spread the word! We are currently hiring for the following positions:
 
       - RN:[ see job description](https://docs.google.com/document/d/e/2PACX-1vRXj2UY2JbbOghHzSbVKMTBvCCuuTgn8_ThJ7voT9TDiK3PZDib3DKp0Zf0NdBWaw/pub)
       - RDMS Sonographer: [see job description](https://docs.google.com/document/d/e/2PACX-1vR9kmEpWwRenWc0kzE0Q75MWv7oB7HhHhlDSQjR2c3cs-oT9WZjBGLKawuhqA0-5WeMU1EbmTpSLYLY/pub)
