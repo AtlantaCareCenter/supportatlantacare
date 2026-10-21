@@ -29,7 +29,8 @@ sections:
       - RDMS Sonographer: [Click here for job description](https://docs.google.com/document/d/e/2PACX-1vR9kmEpWwRenWc0kzE0Q75MWv7oB7HhHhlDSQjR2c3cs-oT9WZjBGLKawuhqA0-5WeMU1EbmTpSLYLY/pub)
       - Advocacy Coordinator: [Click here for job description](https://docs.google.com/document/d/e/2PACX-1vRZWSFthKJvxhX5cJzP2cf5HoKryvkF4nfi_uoTX7HOGlUYbrA63zTZIY7J-ruvOw/pub)
   - _template: text
-    body: '[Donate Today!](https://www.myegiving.com/App/Giving/eGiving-96649)'
+    button_label: Donate Today!
+    button_url: https://giving.myamplify.io//app/giving/eGiving-96649
     center: false
 ---
 
