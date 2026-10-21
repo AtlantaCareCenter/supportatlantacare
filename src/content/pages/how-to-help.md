@@ -21,7 +21,7 @@ sections:
   - _template: callout
     heading: '[Donate Today!](https://www.myegiving.com/App/Giving/eGiving-96649)'
   - _template: callout
-    heading: More ways to help
+    heading: Additional Ways to Help
     text: |-
       **Atlanta Care Center Is Hiring!**
 
