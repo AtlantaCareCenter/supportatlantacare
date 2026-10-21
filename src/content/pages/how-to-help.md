@@ -20,7 +20,6 @@ sections:
         link_url: /how-to-help/churches/
   - _template: callout
     heading: '[Donate Today!](https://www.myegiving.com/App/Giving/eGiving-96649)'
-    text: Buy a [coffee](https://sevenweekscoffee.com/products/medium-roast?variant=41316107223205&selling_plan=2979201189)!
   - _template: callout
     heading: More ways to help
 ---
