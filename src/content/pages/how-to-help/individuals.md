@@ -11,7 +11,7 @@ sections:
       First and foremost, we need your prayers. We passionately believe in the power of prayer according to Scripture. We covet your prayers and ask you to commit to lifting up the staff and patients at our center. Please be praying for the following requests:
 
       - **Pray for our patients:** for the hardships they are facing, for life-affirming choices, and for acceptance of the gospel.
-      - **Pray for staffing provision:** that the Lord would bring the staff to fill our needs of a RN, RDMS Sonographer, and Advocacy Cooridinator.
+      - **Pray for staffing provision:** that the Lord would bring the staff to fill our needs of a RN and RDMS Sonographer.
       - **Pray for our staff:** for strength and rest in God as they serve the men and women who come through our doors.
       - **Pray for our clinic:** that more women would find us, that our staff and services would expand to meet community needs, that our donor base would grow to support our services and staffing, and for a hedge of protection around us.
       - **Pray for our leadership:** that our CEO and Board of Trustees would follow the Lord's guidance, be well-supported, and find rest
